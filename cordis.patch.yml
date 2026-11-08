@@ -1,0 +1,20 @@
+# 打印工坊：单行挂载。
+#
+# 排版 + 打印：把文本/Markdown 排成 A4 讲义 PDF，探测打印机能力后直接投递。
+#
+# 宿主侧注册 /dsh-doc/api/* 路由：打印机能力探测（lpstat / lpoptions）、
+# Markdown → 打印样式 HTML → Chrome headless → A4 PDF、以及按能力映射参数
+# 的 lp 投递与 lpstat 回执轮询。
+#
+# 浏览器侧由 package.json 的 dsh.client 声明进入加载图，注册左侧栏入口
+# （sidebar.panellist）与全局面板页（main）。
+#
+# 可调 config（全部可省略，默认值如下）：
+#   duplex: "long"    # long=长边翻页，short=短边，none=单面
+#   color: "gray"     # gray=灰度，color=彩色
+#   media: "A4"
+#   copies: 1
+#   chromePath: null  # 指定 Chrome/Chromium 可执行文件；null 时自动探测
+- insert:
+    - id: dsh-doc
+      name: '@polunzh/dsh-doc'

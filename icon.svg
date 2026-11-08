@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Print Studio">
+  <defs>
+    <!-- 纸张阴影 -->
+    <filter id="paper-shadow" x="-20%" y="-10%" width="140%" height="130%">
+      <feDropShadow dx="0" dy="16" stdDeviation="16" flood-color="#0E2319" flood-opacity="0.22"/>
+    </filter>
+    <filter id="printer-shadow" x="-20%" y="-10%" width="140%" height="130%">
+      <feDropShadow dx="0" dy="20" stdDeviation="22" flood-color="#0E2319" flood-opacity="0.26"/>
+    </filter>
+    <!-- 机身渐变 -->
+    <linearGradient id="chassis" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#246445"/>
+      <stop offset="100%" stop-color="#184932"/>
+    </linearGradient>
+    <linearGradient id="chassis-lip" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2E7954"/>
+      <stop offset="100%" stop-color="#1B5138"/>
+    </linearGradient>
+    <linearGradient id="paper-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#FBF9F4"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 图标底板（温暖纸张色） -->
+  <rect width="512" height="512" rx="112" fill="#F2EEE5"/>
+
+  <!-- 1. 顶部送纸槽进纸 (In-feed Paper) -->
+  <g filter="url(#paper-shadow)">
+    <path d="M144 80h224a12 12 0 0 1 12 12v118H132V92a12 12 0 0 1 12-12Z" fill="#F8F6F0" stroke="#D3CDC0" stroke-width="3"/>
+    <!-- 进纸页上的浅色空白行 -->
+    <rect x="168" y="112" width="176" height="8" rx="4" fill="#E2DDD2"/>
+    <rect x="168" y="132" width="128" height="8" rx="4" fill="#E2DDD2"/>
+    <rect x="168" y="152" width="152" height="8" rx="4" fill="#E2DDD2"/>
+  </g>
+
+  <!-- 2. 下方出纸托盘已出的纸 (Out-feed Printed Handout) -->
+  <g filter="url(#paper-shadow)">
+    <!-- 打印出来的纸张从出纸口滑出 -->
+    <rect x="136" y="240" width="240" height="200" rx="14" fill="url(#paper-grad)" stroke="#D8D2C5" stroke-width="3"/>
+    
+    <!-- 纸上已经打印出的标题栏与文本行 -->
+    <rect x="164" y="272" width="96" height="14" rx="4" fill="#1F5C3F"/>
+    <rect x="164" y="296" width="184" height="7" rx="3.5" fill="#4B564E" opacity="0.8"/>
+    <rect x="164" y="312" width="172" height="7" rx="3.5" fill="#4B564E" opacity="0.6"/>
+    <rect x="164" y="328" width="184" height="7" rx="3.5" fill="#4B564E" opacity="0.6"/>
+    
+    <!-- 第二小节 / 双面提示小标 -->
+    <rect x="164" y="352" width="60" height="10" rx="3" fill="#1F5C3F" opacity="0.85"/>
+    <rect x="164" y="370" width="184" height="7" rx="3.5" fill="#4B564E" opacity="0.6"/>
+    <rect x="164" y="386" width="140" height="7" rx="3.5" fill="#4B564E" opacity="0.4"/>
+
+    <!-- 双面角标 (2-SIDED ICON) -->
+    <g transform="translate(324 266)">
+      <rect width="28" height="20" rx="4" fill="#E8F1EC" stroke="#1F5C3F" stroke-width="1.8"/>
+      <path d="M7 10h14M16 7l4 3-4 3" fill="none" stroke="#1F5C3F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+  </g>
+
+  <!-- 3. 打印机主体机身 (Printer Chassis) -->
+  <g filter="url(#printer-shadow)">
+    <!-- 主壳体 -->
+    <rect x="76" y="172" width="360" height="152" rx="26" fill="url(#chassis)"/>
+    <!-- 顶部高光边框 -->
+    <path d="M102 173h308c14 0 25 11 25 25v12H77v-12c0-14 11-25 25-25Z" fill="url(#chassis-lip)" opacity="0.6"/>
+
+    <!-- 进纸口深色狭缝 -->
+    <rect x="124" y="184" width="264" height="10" rx="5" fill="#0C2016"/>
+
+    <!-- 前出纸仓开口 (Output Slot) -->
+    <rect x="116" y="238" width="280" height="42" rx="8" fill="#0C2016"/>
+
+    <!-- 打印机正面面板元素 -->
+    <!-- 电源指示灯 (Glowing LED) -->
+    <circle cx="112" cy="216" r="6" fill="#34D399"/>
+    <circle cx="112" cy="216" r="11" fill="#34D399" opacity="0.25"/>
+
+    <!-- 数据/就绪信号灯 -->
+    <circle cx="132" cy="216" r="4" fill="#A7F3D0" opacity="0.8"/>
+
+    <!-- 打印状态/按钮微条 -->
+    <rect x="364" y="212" width="32" height="8" rx="4" fill="#143D2A"/>
+    <rect x="332" y="212" width="24" height="8" rx="4" fill="#143D2A"/>
+  </g>
+
+  <!-- 4. 纸张正在吐出的动态卷轴感折边高光 -->
+  <line x1="124" y1="240" x2="388" y2="240" stroke="#3A8A62" stroke-width="2" opacity="0.6"/>
+</svg>

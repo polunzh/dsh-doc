@@ -1,0 +1,639 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>讲义工坊 · 工作台三态 · 设计规格图</title>
+<style>
+  :root{
+    --paper:#F2EEE5;
+    --paper-2:#EAE5D9;
+    --paper-warm:#F7F2E8;
+    --card:#FFFFFF;
+    --ink:#1D211C;
+    --ink-2:#565C52;
+    --ink-3:#8C9187;
+    --line:#D9D3C5;
+    --line-soft:#E7E2D6;
+    --green:#1F5C3F;
+    --green-2:#2E7050;
+    --green-soft:#E9F0EA;
+    --blue:#2B4C7E;
+    --ochre:#8A5A2B;
+    --seal:#B3472F;
+    --sans:-apple-system,"PingFang SC","Helvetica Neue","Segoe UI",sans-serif;
+    --serif:"Songti SC","STSong","Times New Roman",serif;
+    --mono:"SF Mono","Menlo","Courier New",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:1920px;height:1200px}
+  body{
+    background:
+      radial-gradient(circle at 16% 6%, rgba(255,255,255,.9), transparent 44%),
+      radial-gradient(circle at 86% 94%, rgba(213,204,184,.5), transparent 54%),
+      var(--paper);
+    font-family:var(--sans);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    padding:44px 56px 0;
+    overflow:hidden;
+    position:relative;
+  }
+  body::before{
+    content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+    background-image:radial-gradient(rgba(29,33,28,.12) .65px, transparent .65px);
+    background-size:5px 5px;opacity:.42;
+  }
+  .sheet{position:relative;z-index:1}
+
+  /* ── 裁切标记 ─────────────────────────────────────── */
+  .crop{position:fixed;width:16px;height:16px;z-index:2;pointer-events:none;opacity:.5}
+  .crop.tl{top:20px;left:20px;border-top:1px solid #9A9484;border-left:1px solid #9A9484}
+  .crop.tr{top:20px;right:20px;border-top:1px solid #9A9484;border-right:1px solid #9A9484}
+  .crop.bl{bottom:20px;left:20px;border-bottom:1px solid #9A9484;border-left:1px solid #9A9484}
+  .crop.br{bottom:20px;right:20px;border-bottom:1px solid #9A9484;border-right:1px solid #9A9484}
+
+  /* ── 图纸页头 ─────────────────────────────────────── */
+  .sheet-head{display:flex;align-items:flex-end;justify-content:space-between;gap:40px;padding-bottom:22px;border-bottom:1px solid var(--line)}
+  .brand-line{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .mark{width:9px;height:9px;background:var(--green);transform:rotate(45deg);flex:none}
+  .kicker{font-family:var(--mono);font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-3)}
+  .design-tag{
+    margin-left:6px;font-family:var(--mono);font-size:7.5px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--ink-2);border:1px solid var(--line);border-radius:2px;padding:2px 6px;background:rgba(255,255,255,.5);
+  }
+  h1{font-family:var(--serif);font-size:44px;line-height:1;font-weight:600;letter-spacing:.02em}
+  h1 em{
+    font-style:normal;font-family:var(--sans);font-size:13px;font-weight:400;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--ink-3);margin-left:16px;vertical-align:8px;
+  }
+  .sub{margin-top:12px;font-size:11.5px;line-height:1.7;color:var(--ink-2);letter-spacing:.01em;max-width:760px}
+  .sub b{font-weight:600;color:var(--ink)}
+  .meta{border-left:1px solid var(--line);padding-left:20px;padding-bottom:3px;flex:none;width:352px}
+  .mrow{display:flex;align-items:baseline;justify-content:space-between;gap:24px;padding:2.5px 0}
+  .mrow span{font-family:var(--mono);font-size:7.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-3);flex:none}
+  .mrow b{font-family:var(--mono);font-size:8.5px;font-weight:500;letter-spacing:.05em;color:var(--ink)}
+
+  /* ── 三块状态 ─────────────────────────────────────── */
+  .caps{display:flex;gap:34px;margin-top:20px}
+  .cap{width:580px;display:flex;align-items:center;gap:9px;flex:none}
+  .cap i{
+    width:17px;height:17px;border-radius:50%;background:var(--ink);color:var(--paper);
+    font-style:normal;font-family:var(--mono);font-size:8px;display:grid;place-items:center;letter-spacing:0;flex:none;
+  }
+  .cap b{font-size:12px;font-weight:600;letter-spacing:.04em;flex:none}
+  .cap .code{font-family:var(--mono);font-size:8px;letter-spacing:.16em;color:var(--green);flex:none}
+  .cap .rule{flex:1;height:1px;background:var(--line);margin:0 3px}
+  .cap .desc{font-family:var(--mono);font-size:7px;letter-spacing:.05em;color:var(--ink-3);white-space:nowrap}
+
+  .panels{display:flex;gap:34px;margin-top:13px;align-items:stretch}
+  .panel{
+    width:580px;height:720px;flex:none;position:relative;overflow:hidden;
+    background:var(--paper-warm);border:1px solid #CFC8B8;border-radius:14px;
+    box-shadow:0 1px 1px rgba(29,33,28,.05),0 24px 46px -22px rgba(29,33,28,.4);
+  }
+
+  /* ── 工作台 ───────────────────────────────────────── */
+  .wb{height:100%;display:flex;flex-direction:column;font-family:var(--sans);color:var(--ink)}
+  .wb-head{flex:none;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:15px 18px 11px;border-bottom:1px solid var(--line-soft)}
+  .wb-brand{display:flex;align-items:flex-start;gap:9px;min-width:0}
+  .wb-mark{width:7px;height:7px;background:var(--green);transform:rotate(45deg);margin-top:8px;flex:none}
+  .wb-kicker{font-family:var(--mono);font-size:6.4px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+  .wb-title{display:flex;align-items:baseline;gap:8px;font-family:var(--serif);font-size:19px;line-height:1.12;font-weight:600;letter-spacing:.02em;white-space:nowrap}
+  .wb-title em{font-style:normal;font-family:var(--sans);font-size:7px;font-weight:400;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3)}
+  .wb-sub{margin-top:4px;font-size:7.2px;line-height:1.5;color:var(--ink-2);letter-spacing:.01em;white-space:nowrap}
+  .wb-status{
+    flex:none;display:flex;align-items:center;gap:5px;margin-top:2px;
+    font-family:var(--mono);font-size:7px;letter-spacing:.02em;color:var(--ink-2);
+    background:#fff;border:1px solid var(--line);border-radius:999px;padding:4px 8px 4px 7px;white-space:nowrap;
+  }
+  .dot{width:5px;height:5px;border-radius:50%;background:var(--green);flex:none}
+
+  .wb-grid{flex:1;min-height:0;display:grid;grid-template-columns:1.02fr .98fr;gap:12px;padding:12px 18px 0}
+  .card{
+    min-width:0;min-height:0;overflow:hidden;display:flex;flex-direction:column;gap:9px;
+    background:var(--card);border:1px solid var(--line-soft);border-radius:11px;padding:11px 12px 11px;
+    box-shadow:0 1px 0 rgba(29,33,28,.02);
+  }
+  .lab{flex:none;display:flex;align-items:baseline;justify-content:space-between;gap:8px;
+    font-family:var(--mono);font-size:6.6px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-3);line-height:1.3}
+  .lab b{font-family:var(--mono);font-size:7.4px;font-weight:500;letter-spacing:.01em;text-transform:none;color:var(--ink-2)}
+  .lab .link{font-size:6.6px;letter-spacing:.02em;color:var(--green-2);text-transform:none}
+
+  .chips{flex:none;display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+  .chip{font-size:7.6px;line-height:1;padding:5px 8px;border-radius:6px;border:1px solid var(--line);background:#FBF8F1;color:var(--ink-2);white-space:nowrap}
+  .chip.on{border-color:rgba(31,92,63,.55);background:var(--green-soft);color:var(--green);font-weight:600}
+  .chip.ghost{border-style:dashed;background:transparent;color:var(--ink-3)}
+
+  .editor{
+    flex:1;min-height:0;overflow:hidden;white-space:pre-wrap;
+    font-family:var(--mono);font-size:7.8px;line-height:1.86;letter-spacing:.01em;color:#2A2F28;
+    background:#FBF8F1;border:1px solid var(--line);border-radius:8px;padding:9px 10px;
+  }
+  .editor b{font-weight:400;color:var(--ink-3)}
+  .hint{flex:none;display:flex;justify-content:space-between;gap:8px;
+    font-family:var(--mono);font-size:6.4px;letter-spacing:.04em;color:var(--ink-3)}
+  .hint b{font-weight:500;color:var(--ink-2)}
+
+  /* 空态 */
+  .empty{
+    flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;
+    border:1px dashed var(--line);border-radius:8px;background:#FBF8F1;color:var(--ink-3);
+  }
+  .empty svg{opacity:.5}
+  .empty strong{font-size:8.4px;font-weight:500;color:var(--ink-2);letter-spacing:.02em}
+  .empty span{font-family:var(--mono);font-size:6.4px;letter-spacing:.06em}
+
+  /* A4 缩略图 */
+  .a4wrap{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+  .a4{
+    width:226px;height:320px;background:#fff;border:1px solid #D5CEC0;border-radius:2px;
+    box-shadow:0 1px 2px rgba(0,0,0,.09),0 16px 30px -16px rgba(0,0,0,.45);
+    padding:24px 15px 12px;display:flex;flex-direction:column;align-items:center;overflow:hidden;flex:none;
+  }
+  .a4-title{font-size:10px;font-weight:600;letter-spacing:.08em;color:var(--green);line-height:1.2;white-space:nowrap}
+  .a4-author{margin:4px 0 10px;font-size:5.6px;letter-spacing:.1em;color:#6B7269;white-space:nowrap}
+  .a4-body{display:flex;flex-direction:column;align-items:center;gap:0}
+  .a4-body span{display:block;white-space:nowrap;font-size:4.8px;line-height:2.02;letter-spacing:.02em;color:#1D211C}
+  .a4-cap{font-family:var(--mono);font-size:6.2px;letter-spacing:.1em;color:var(--ink-3)}
+
+  /* 校验 + 分摊 */
+  .guards{flex:none;display:flex;flex-direction:column}
+  .rules{display:flex;flex-direction:column}
+  .rule{display:flex;align-items:center;gap:6px;padding:4.5px 0;border-bottom:1px dotted var(--line);font-size:7.2px;line-height:1.35;color:var(--ink-2)}
+  .rule:last-child{border-bottom:0}
+  .ic{width:11px;height:11px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:6px;font-weight:700;line-height:1}
+  .ic.ok{background:var(--green-soft);color:var(--green)}
+  .ic.warn{background:#F5E8D4;color:var(--ochre)}
+  .sheetbox{flex:none;border:1px solid var(--line);border-radius:8px;background:#FBF8F1;padding:7px 9px 8px}
+  .sheetrow{display:flex;align-items:center;gap:7px;margin-top:6px}
+  .face{display:flex;align-items:center;gap:4px;font-size:6.6px;color:var(--ink-2);white-space:nowrap}
+  .face i{width:9px;height:12px;border:1px solid var(--line);border-radius:1.5px;background:#fff;display:block}
+  .pill{margin-left:auto;font-family:var(--mono);font-size:6px;letter-spacing:.04em;padding:2.5px 6px;border-radius:4px;background:var(--green-soft);color:var(--green);white-space:nowrap}
+
+  /* 动作栏 */
+  .wb-actions{flex:none;display:flex;align-items:center;gap:10px;margin:0 18px;padding:9px 0 11px;border-top:1px solid var(--line)}
+  .spec{flex:1;display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff;min-width:0}
+  .spec>div{flex:1;min-width:0;padding:4.5px 7px;border-right:1px solid var(--line-soft)}
+  .spec>div:last-child{border-right:0}
+  .spec dt{font-family:var(--mono);font-size:5.8px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);line-height:1.3}
+  .spec dd{margin:1.5px 0 0;font-size:7.2px;font-weight:500;color:var(--ink);letter-spacing:.01em;white-space:nowrap}
+  .btns{display:flex;gap:6px;flex:none}
+  .btn{height:26px;padding:0 10px;border-radius:7px;border:1px solid var(--line);background:#fff;color:var(--ink);
+    font-family:var(--sans);font-size:8px;font-weight:600;letter-spacing:.02em;display:inline-flex;align-items:center;justify-content:center;gap:4px;white-space:nowrap}
+  .btn.primary{background:var(--green);border-color:transparent;color:#fff;box-shadow:0 5px 12px -7px rgba(31,92,63,.95)}
+  .btn[disabled]{opacity:.42}
+
+  /* ③ 压暗 + 确认卡 */
+  .scrim{position:absolute;inset:0;z-index:5;background:rgba(20,24,20,.29);backdrop-filter:blur(.8px);display:grid;place-items:center;padding:20px}
+  .modal{width:326px;background:#fff;border:1px solid var(--line);border-radius:13px;overflow:hidden;
+    box-shadow:0 2px 4px rgba(0,0,0,.1),0 28px 56px -22px rgba(0,0,0,.55)}
+  .modal-head{display:flex;align-items:center;gap:8px;padding:12px 14px 10px;border-bottom:1px solid var(--line-soft)}
+  .modal-head h3{font-family:var(--serif);font-size:12.5px;font-weight:600;letter-spacing:.06em}
+  .stamp{margin-left:auto;font-size:8px;letter-spacing:.16em;color:var(--seal);border:1px solid var(--seal);
+    border-radius:2px;padding:1px 4px;transform:rotate(-4deg);font-family:var(--mono)}
+  .modal-rows{padding:3px 14px 9px}
+  .mrow{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px dashed var(--line-soft);font-size:8px}
+  .mrow:last-child{border-bottom:0}
+  .mrow dt{font-family:var(--mono);font-size:6.2px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);padding-top:1px;flex:none}
+  .mrow dd{margin:0;text-align:right;font-weight:500;font-size:7.9px;color:var(--ink);line-height:1.35}
+  .mrow dd small{display:block;margin-top:1px;font-family:var(--mono);font-size:5.9px;font-weight:400;color:var(--ink-3);letter-spacing:.01em}
+  .modal-warn{margin:0 14px 10px;padding:5px 7px;border-radius:5px;background:#F8EFE0;color:#6B573C;font-size:6.8px;line-height:1.55}
+  .modal-foot{display:flex;gap:6px;padding:0 14px 12px}
+  .modal-foot .btn{flex:1;height:24px;font-size:7.6px}
+
+  /* ── 底部规格带 ───────────────────────────────────── */
+  .specs{display:grid;grid-template-columns:repeat(3,1fr);gap:34px;margin-top:26px}
+  .spec-block{border-top:1.5px solid rgba(29,33,28,.72);padding-top:11px;min-width:0}
+  .sb-head{display:flex;align-items:baseline;gap:8px;margin-bottom:11px}
+  .sb-head i{font-style:normal;font-family:var(--mono);font-size:7.5px;color:var(--green);letter-spacing:.08em}
+  .sb-head b{font-size:9.5px;font-weight:600;letter-spacing:.06em;color:var(--ink)}
+  .sb-head span{font-family:var(--mono);font-size:7px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);margin-left:auto}
+
+  .swatches{display:flex;gap:8px}
+  .sw{flex:1;min-width:0}
+  .sw i{display:block;height:30px;border-radius:5px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.07)}
+  .sw .hex{margin-top:5px;font-family:var(--mono);font-size:7.2px;color:var(--ink);letter-spacing:.01em}
+  .sw .nm{margin-top:1.5px;font-size:6.8px;color:var(--ink-3);white-space:nowrap}
+
+  .ts{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:4px 0;border-bottom:1px dotted var(--line)}
+  .ts:last-child{border-bottom:0}
+  .ts .sample{color:var(--ink);white-space:nowrap;overflow:hidden}
+  .ts .s-serif-lg{font-family:var(--serif);font-size:14px;font-weight:600;letter-spacing:.02em}
+  .ts .s-serif{font-family:var(--serif);font-size:11px;font-weight:600;letter-spacing:.02em}
+  .ts .s-body{font-size:8.4px;letter-spacing:.01em}
+  .ts .s-label{font-family:var(--mono);font-size:7px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-2)}
+  .ts .s-data{font-family:var(--mono);font-size:7.6px;letter-spacing:.02em}
+  .ts .val{font-family:var(--mono);font-size:6.6px;color:var(--ink-3);letter-spacing:.02em;flex:none}
+
+  .sm{display:flex;align-items:baseline;gap:7px;padding:4.5px 0;border-bottom:1px dotted var(--line);font-size:7.2px}
+  .sm:last-child{border-bottom:0}
+  .sm i{width:12px;height:12px;border-radius:50%;background:var(--ink);color:var(--paper);font-style:normal;
+    font-family:var(--mono);font-size:6px;display:grid;place-items:center;flex:none;align-self:center}
+  .sm b{font-size:8.4px;font-weight:600;letter-spacing:.03em;flex:none}
+  .sm code{font-family:var(--mono);font-size:6.4px;letter-spacing:.1em;color:var(--green);flex:none}
+  .sm span{color:var(--ink-3);margin-left:auto;text-align:right;font-size:6.8px;line-height:1.4}
+
+  .sheet-foot{display:flex;justify-content:space-between;align-items:baseline;gap:20px;margin-top:17px;padding-top:9px;border-top:1px solid var(--line);
+    font-family:var(--mono);font-size:6.8px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+  .sheet-foot b{font-weight:400;color:var(--ink-2)}
+</style>
+</head>
+<body>
+
+<div class="crop tl"></div><div class="crop tr"></div><div class="crop bl"></div><div class="crop br"></div>
+
+<div class="sheet">
+
+  <!-- ══ 页头 ══════════════════════════════════════════ -->
+  <header class="sheet-head">
+    <div class="head-left">
+      <div class="brand-line">
+        <span class="mark"></span>
+        <span class="kicker">DSH Plugin · @polunzh/dsh-doc</span>
+        <span class="design-tag">Design Sheet 01</span>
+      </div>
+      <h1>讲义工坊<em>Lecture Workshop</em></h1>
+      <p class="sub">把一段文字变成可打印的讲义：<b>模板</b>负责版式，<b>渲染</b>负责分页，你来确认出纸。—— 全宽工作台三态：待命 / 已渲染 / 打印确认。</p>
+    </div>
+    <div class="meta">
+      <div class="mrow"><span>VERSION</span><b>0.1.0</b></div>
+      <div class="mrow"><span>DATE</span><b>2026.11.07</b></div>
+      <div class="mrow"><span>SURFACE</span><b>MAIN PANEL · 全宽 1100px</b></div>
+      <div class="mrow"><span>STATES</span><b>IDLE · READY · CONFIRM</b></div>
+    </div>
+  </header>
+
+  <!-- ══ 编号 ══════════════════════════════════════════ -->
+  <div class="caps">
+    <div class="cap">
+      <i>1</i><b>待命</b><span class="code">IDLE</span><span class="rule"></span>
+      <span class="desc">编辑器有内容 · 右侧空态</span>
+    </div>
+    <div class="cap">
+      <i>2</i><b>已渲染</b><span class="code">READY</span><span class="rule"></span>
+      <span class="desc">A4 预览 · 3 条校验 · 纸张分摊</span>
+    </div>
+    <div class="cap">
+      <i>3</i><b>打印确认</b><span class="code">CONFIRM</span><span class="rule"></span>
+      <span class="desc">背景压暗 · 居中确认卡</span>
+    </div>
+  </div>
+
+  <!-- ══ 三块面板 ══════════════════════════════════════ -->
+  <div class="panels">
+
+    <!-- ── ① IDLE ───────────────────────────────────── -->
+    <section class="panel">
+      <div class="wb">
+        <header class="wb-head">
+          <div class="wb-brand">
+            <span class="wb-mark"></span>
+            <div>
+              <div class="wb-kicker">DSH Plugin · DSH-DOC</div>
+              <div class="wb-title">讲义工坊<em>Lecture Workshop</em></div>
+              <p class="wb-sub">把一段文字变成可打印的讲义：模板负责版式，渲染负责分页，你来确认出纸。</p>
+            </div>
+          </div>
+          <span class="wb-status"><span class="dot"></span>HP_LaserJet_M404</span>
+        </header>
+
+        <div class="wb-grid">
+          <section class="card">
+            <div class="lab"><span>TEMPLATE</span><b>10.5pt · 单栏</b></div>
+            <div class="chips">
+              <span class="chip on">通用讲义</span>
+              <span class="chip ghost">+ 新模板</span>
+            </div>
+            <div class="lab"><span>CONTENT</span><b>319 字</b></div>
+            <div class="editor">春江花月夜
+唐 · 张若虚
+春江潮水连海平，海上明月共潮生。
+滟滟随波千万里，何处春江无月明？
+江流宛转绕芳甸，月照花林皆似霰。
+空里流霜不觉飞，汀上白沙看不见。
+江天一色无纤尘，皎皎空中孤月轮。
+江畔何人初见月，江月何年初照人？
+人生代代无穷已，江月年年望相似。
+不知江月待何人？但见长江送流水。
+白云一片去悠悠，青枫浦上不胜愁。
+谁家今夜扁舟子，何处相思明月楼？
+可怜楼上月徘徊，应照离人妆镜台。
+玉户帘中卷不去，捣衣砧上拂还来。
+此时相望不相闻，愿逐月华流照君。
+鸿雁长飞光不度，鱼龙潜跃水成文。
+昨夜闲潭梦落花，可怜春半不还家。
+江水流春去欲尽，江潭落月复西斜。
+斜月沉沉藏海雾，碣石潇湘无限路。
+不知乘月几人归，落月摇情满江树。</div>
+            <div class="hint"><span>⌘↵ 渲染</span><span>尚未渲染</span></div>
+          </section>
+
+          <section class="card">
+            <div class="lab"><span>PREVIEW</span><b>尚未渲染</b></div>
+            <div class="empty">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+                <rect x="5" y="3" width="14" height="18" rx="2"></rect>
+                <path d="M8.5 8h7M8.5 12h7M8.5 16h4"></path>
+              </svg>
+              <strong>渲染后在此查看分页</strong>
+              <span>A4 · 双面 · 灰色打印</span>
+            </div>
+          </section>
+        </div>
+
+        <div class="wb-actions">
+          <div class="spec">
+            <div><dt>PAPER</dt><dd>A4</dd></div>
+            <div><dt>PAGES</dt><dd>—</dd></div>
+            <div><dt>DUPLEX</dt><dd>长边翻页</dd></div>
+            <div><dt>SHEETS</dt><dd>—</dd></div>
+          </div>
+          <div class="btns">
+            <button class="btn primary">渲染预览</button>
+            <button class="btn" disabled>打印</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── ② READY ──────────────────────────────────── -->
+    <section class="panel">
+      <div class="wb">
+        <header class="wb-head">
+          <div class="wb-brand">
+            <span class="wb-mark"></span>
+            <div>
+              <div class="wb-kicker">DSH Plugin · DSH-DOC</div>
+              <div class="wb-title">讲义工坊<em>Lecture Workshop</em></div>
+              <p class="wb-sub">把一段文字变成可打印的讲义：模板负责版式，渲染负责分页，你来确认出纸。</p>
+            </div>
+          </div>
+          <span class="wb-status"><span class="dot"></span>HP_LaserJet_M404</span>
+        </header>
+
+        <div class="wb-grid">
+          <section class="card">
+            <div class="lab"><span>TEMPLATE</span><b>10.5pt · 单栏</b></div>
+            <div class="chips">
+              <span class="chip on">通用讲义</span>
+              <span class="chip ghost">+ 新模板</span>
+            </div>
+            <div class="lab"><span>CONTENT</span><b>319 字</b></div>
+            <div class="editor">春江花月夜
+唐 · 张若虚
+春江潮水连海平，海上明月共潮生。
+滟滟随波千万里，何处春江无月明？
+江流宛转绕芳甸，月照花林皆似霰。
+空里流霜不觉飞，汀上白沙看不见。
+江天一色无纤尘，皎皎空中孤月轮。
+江畔何人初见月，江月何年初照人？
+人生代代无穷已，江月年年望相似。
+不知江月待何人？但见长江送流水。
+白云一片去悠悠，青枫浦上不胜愁。
+谁家今夜扁舟子，何处相思明月楼？
+可怜楼上月徘徊，应照离人妆镜台。
+玉户帘中卷不去，捣衣砧上拂还来。
+此时相望不相闻，愿逐月华流照君。
+鸿雁长飞光不度，鱼龙潜跃水成文。
+昨夜闲潭梦落花，可怜春半不还家。
+江水流春去欲尽，江潭落月复西斜。
+斜月沉沉藏海雾，碣石潇湘无限路。
+不知乘月几人归，落月摇情满江树。</div>
+            <div class="hint"><span>⌘↵ 渲染</span><span>已渲染</span></div>
+          </section>
+
+          <section class="card">
+            <div class="lab"><span>PREVIEW</span><b>1 页 · A4</b></div>
+            <div class="a4wrap">
+              <div class="a4">
+                <div class="a4-title">春江花月夜</div>
+                <div class="a4-author">唐 · 张若虚</div>
+                <div class="a4-body">
+                  <span>春江潮水连海平，海上明月共潮生。</span>
+                  <span>滟滟随波千万里，何处春江无月明？</span>
+                  <span>江流宛转绕芳甸，月照花林皆似霰。</span>
+                  <span>空里流霜不觉飞，汀上白沙看不见。</span>
+                  <span>江天一色无纤尘，皎皎空中孤月轮。</span>
+                  <span>江畔何人初见月，江月何年初照人？</span>
+                  <span>人生代代无穷已，江月年年望相似。</span>
+                  <span>不知江月待何人？但见长江送流水。</span>
+                  <span>白云一片去悠悠，青枫浦上不胜愁。</span>
+                  <span>谁家今夜扁舟子，何处相思明月楼？</span>
+                  <span>可怜楼上月徘徊，应照离人妆镜台。</span>
+                  <span>玉户帘中卷不去，捣衣砧上拂还来。</span>
+                  <span>此时相望不相闻，愿逐月华流照君。</span>
+                  <span>鸿雁长飞光不度，鱼龙潜跃水成文。</span>
+                  <span>昨夜闲潭梦落花，可怜春半不还家。</span>
+                  <span>江水流春去欲尽，江潭落月复西斜。</span>
+                  <span>斜月沉沉藏海雾，碣石潇湘无限路。</span>
+                  <span>不知乘月几人归，落月摇情满江树。</span>
+                </div>
+              </div>
+              <span class="a4-cap">第 1 页 / 共 1 页 · A4</span>
+            </div>
+
+            <div class="guards">
+              <div class="lab"><span>LAYOUT GUARDS</span><b>2 / 3</b></div>
+              <div class="rules">
+                <div class="rule"><span class="ic ok">✓</span><span>纸张 A4 · 与预览一致</span></div>
+                <div class="rule"><span class="ic warn">!</span><span>奇数页：最后一张背面会空白</span></div>
+                <div class="rule"><span class="ic ok">✓</span><span>题目与答法锁定（keep-together）</span></div>
+              </div>
+            </div>
+
+            <div class="sheetbox">
+              <div class="lab"><span>SHEET PLAN</span><b>1 张 · 长边翻页</b></div>
+              <div class="sheetrow">
+                <span class="face"><i></i>正面 · 第 1 页</span>
+                <span class="pill">长边翻页</span>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="wb-actions">
+          <div class="spec">
+            <div><dt>PAPER</dt><dd>A4</dd></div>
+            <div><dt>PAGES</dt><dd>1 页</dd></div>
+            <div><dt>DUPLEX</dt><dd>长边翻页</dd></div>
+            <div><dt>SHEETS</dt><dd>1 张</dd></div>
+          </div>
+          <div class="btns">
+            <button class="btn">重新渲染</button>
+            <button class="btn primary">打印 1 页</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── ③ CONFIRM ────────────────────────────────── -->
+    <section class="panel">
+      <div class="wb">
+        <header class="wb-head">
+          <div class="wb-brand">
+            <span class="wb-mark"></span>
+            <div>
+              <div class="wb-kicker">DSH Plugin · DSH-DOC</div>
+              <div class="wb-title">讲义工坊<em>Lecture Workshop</em></div>
+              <p class="wb-sub">把一段文字变成可打印的讲义：模板负责版式，渲染负责分页，你来确认出纸。</p>
+            </div>
+          </div>
+          <span class="wb-status"><span class="dot"></span>HP_LaserJet_M404</span>
+        </header>
+
+        <div class="wb-grid">
+          <section class="card">
+            <div class="lab"><span>TEMPLATE</span><b>10.5pt · 单栏</b></div>
+            <div class="chips">
+              <span class="chip on">通用讲义</span>
+              <span class="chip ghost">+ 新模板</span>
+            </div>
+            <div class="lab"><span>CONTENT</span><b>319 字</b></div>
+            <div class="editor">春江花月夜
+唐 · 张若虚
+春江潮水连海平，海上明月共潮生。
+滟滟随波千万里，何处春江无月明？
+江流宛转绕芳甸，月照花林皆似霰。
+空里流霜不觉飞，汀上白沙看不见。
+江天一色无纤尘，皎皎空中孤月轮。
+江畔何人初见月，江月何年初照人？
+人生代代无穷已，江月年年望相似。
+不知江月待何人？但见长江送流水。
+白云一片去悠悠，青枫浦上不胜愁。
+谁家今夜扁舟子，何处相思明月楼？
+可怜楼上月徘徊，应照离人妆镜台。
+玉户帘中卷不去，捣衣砧上拂还来。
+此时相望不相闻，愿逐月华流照君。
+鸿雁长飞光不度，鱼龙潜跃水成文。
+昨夜闲潭梦落花，可怜春半不还家。
+江水流春去欲尽，江潭落月复西斜。
+斜月沉沉藏海雾，碣石潇湘无限路。
+不知乘月几人归，落月摇情满江树。</div>
+            <div class="hint"><span>⌘↵ 渲染</span><span>已渲染</span></div>
+          </section>
+
+          <section class="card">
+            <div class="lab"><span>PREVIEW</span><b>1 页 · A4</b></div>
+            <div class="a4wrap">
+              <div class="a4">
+                <div class="a4-title">春江花月夜</div>
+                <div class="a4-author">唐 · 张若虚</div>
+                <div class="a4-body">
+                  <span>春江潮水连海平，海上明月共潮生。</span>
+                  <span>滟滟随波千万里，何处春江无月明？</span>
+                  <span>江流宛转绕芳甸，月照花林皆似霰。</span>
+                  <span>空里流霜不觉飞，汀上白沙看不见。</span>
+                  <span>江天一色无纤尘，皎皎空中孤月轮。</span>
+                  <span>江畔何人初见月，江月何年初照人？</span>
+                  <span>人生代代无穷已，江月年年望相似。</span>
+                  <span>不知江月待何人？但见长江送流水。</span>
+                  <span>白云一片去悠悠，青枫浦上不胜愁。</span>
+                  <span>谁家今夜扁舟子，何处相思明月楼？</span>
+                  <span>可怜楼上月徘徊，应照离人妆镜台。</span>
+                  <span>玉户帘中卷不去，捣衣砧上拂还来。</span>
+                  <span>此时相望不相闻，愿逐月华流照君。</span>
+                  <span>鸿雁长飞光不度，鱼龙潜跃水成文。</span>
+                  <span>昨夜闲潭梦落花，可怜春半不还家。</span>
+                  <span>江水流春去欲尽，江潭落月复西斜。</span>
+                  <span>斜月沉沉藏海雾，碣石潇湘无限路。</span>
+                  <span>不知乘月几人归，落月摇情满江树。</span>
+                </div>
+              </div>
+              <span class="a4-cap">第 1 页 / 共 1 页 · A4</span>
+            </div>
+
+            <div class="guards">
+              <div class="lab"><span>LAYOUT GUARDS</span><b>2 / 3</b></div>
+              <div class="rules">
+                <div class="rule"><span class="ic ok">✓</span><span>纸张 A4 · 与预览一致</span></div>
+                <div class="rule"><span class="ic warn">!</span><span>奇数页：最后一张背面会空白</span></div>
+                <div class="rule"><span class="ic ok">✓</span><span>题目与答法锁定（keep-together）</span></div>
+              </div>
+            </div>
+
+            <div class="sheetbox">
+              <div class="lab"><span>SHEET PLAN</span><b>1 张 · 长边翻页</b></div>
+              <div class="sheetrow">
+                <span class="face"><i></i>正面 · 第 1 页</span>
+                <span class="pill">长边翻页</span>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="wb-actions">
+          <div class="spec">
+            <div><dt>PAPER</dt><dd>A4</dd></div>
+            <div><dt>PAGES</dt><dd>1 页</dd></div>
+            <div><dt>DUPLEX</dt><dd>长边翻页</dd></div>
+            <div><dt>SHEETS</dt><dd>1 张</dd></div>
+          </div>
+          <div class="btns">
+            <button class="btn">重新渲染</button>
+            <button class="btn primary">打印 1 页</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="scrim">
+        <div class="modal">
+          <div class="modal-head">
+            <h3>确认打印</h3>
+            <span class="stamp">校</span>
+          </div>
+          <div class="modal-rows">
+            <div class="mrow"><dt>PRINTER</dt><dd>HP_LaserJet_M404<small>ipp://192.168.1.24/ipp/print</small></dd></div>
+            <div class="mrow"><dt>PAPER</dt><dd>A4 · 灰度</dd></div>
+            <div class="mrow"><dt>PAGES</dt><dd>1 页 → 1 张纸</dd></div>
+            <div class="mrow"><dt>DUPLEX</dt><dd>长边翻页</dd></div>
+          </div>
+          <div class="modal-warn">出纸后无法撤回。请确认没有选错文档。</div>
+          <div class="modal-foot">
+            <button class="btn">取消</button>
+            <button class="btn primary">正式打印</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ══ 规格说明带 ════════════════════════════════════ -->
+  <div class="specs">
+    <div class="spec-block">
+      <div class="sb-head"><i>01</i><b>色板</b><span>Palette</span></div>
+      <div class="swatches">
+        <div class="sw"><i style="background:#1F5C3F"></i><div class="hex">#1F5C3F</div><div class="nm">墨绿 · 主色/标识</div></div>
+        <div class="sw"><i style="background:#2B4C7E"></i><div class="hex">#2B4C7E</div><div class="nm">靛蓝 · 模板</div></div>
+        <div class="sw"><i style="background:#8A5A2B"></i><div class="hex">#8A5A2B</div><div class="nm">赭石 · 纸张</div></div>
+        <div class="sw"><i style="background:#B3472F"></i><div class="hex">#B3472F</div><div class="nm">朱砂 · 警示</div></div>
+        <div class="sw"><i style="background:#1D211C"></i><div class="hex">#1D211C</div><div class="nm">墨黑 · 正文</div></div>
+      </div>
+    </div>
+
+    <div class="spec-block">
+      <div class="sb-head"><i>02</i><b>字号层级</b><span>Type Scale</span></div>
+      <div class="ts"><span class="sample s-serif-lg">讲义工坊</span><span class="val">Songti 26 / 600 · 面板标题</span></div>
+      <div class="ts"><span class="sample s-serif">春江花月夜</span><span class="val">Songti 15 / 600 · 卡片标题</span></div>
+      <div class="ts"><span class="sample s-body">把一段文字变成可打印的讲义</span><span class="val">PingFang 12 / 1.6 · 正文</span></div>
+      <div class="ts"><span class="sample s-label">TEMPLATE / CONTENT</span><span class="val">Mono 9.5 / .18em · 标签</span></div>
+      <div class="ts"><span class="sample s-data">10.5pt · 单栏 · A4</span><span class="val">Mono 10 · 数据</span></div>
+    </div>
+
+    <div class="spec-block">
+      <div class="sb-head"><i>03</i><b>状态映射</b><span>State Map</span></div>
+      <div class="sm"><i>1</i><b>待命</b><code>IDLE</code><span>空态预览 · 渲染为主按钮</span></div>
+      <div class="sm"><i>2</i><b>已渲染</b><code>READY</code><span>A4 缩略图 · 校验 · 分摊</span></div>
+      <div class="sm"><i>3</i><b>确认</b><code>CONFIRM</code><span>压暗 + 确认卡 · 不可撤回</span></div>
+    </div>
+  </div>
+
+  <footer class="sheet-foot">
+    <span><b>讲义工坊</b> · workspace mockup · 3 states</span>
+    <span>PANEL 580 × 720 · TYPE SONGTI SC / PINGFANG SC / SF MONO</span>
+    <span>1920 × 1200 @2x · 2026.11.07</span>
+  </footer>
+
+</div>
+</body>
+</html>

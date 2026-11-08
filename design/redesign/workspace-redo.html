@@ -1,0 +1,638 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>dsh-doc · 工作台布局重做 · 设计规格图</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+  html, body { width: 2360px; box-sizing: border-box; }
+  body { padding: 40px 80px 40px; }
+
+  /* ══ 面板外层（1:1 画布 1240×800，按 .86 缩放进图纸） ══════ */
+  .stage { width: 1066px; height: 688px; position: relative; flex: none; }
+  .stage .frame { position: absolute; inset: 0; }
+  .stage .scaler { width: 1240px; height: 800px; transform: scale(.8597); transform-origin: top left; }
+  .stage-foot { display: flex; align-items: baseline; justify-content: space-between; margin-top: 11px; }
+  .stage-foot b { font-family: var(--serif); font-size: 15px; font-weight: 600; letter-spacing: .04em; }
+  .stage-foot span { font-family: var(--mono); font-size: 8px; letter-spacing: .18em; text-transform: uppercase; color: var(--ink-3); }
+  .stage-foot .delta { color: var(--green); }
+
+  /* ══ 图纸内界面 token（按实际 DSH 亮色面板实测还原） ═══════ */
+  .ui {
+    --p-bg: #ffffff;
+    --p-bg2: #faf9f5;
+    --p-line: #e8e5dd;
+    --p-line-2: #dcd8ce;
+    --p-ink: #1f231e;
+    --p-ink2: #5a6057;
+    --p-ink3: #8f948a;
+    --p-accent: #2c7150;
+    --p-accent-soft: #eaf1eb;
+    width: 1240px; height: 800px; background: var(--p-bg); color: var(--p-ink);
+    font-family: var(--sans); font-size: 12.5px; letter-spacing: .01em;
+    display: flex; flex-direction: column; position: relative; overflow: hidden;
+  }
+  .ui *, .ui *::before, .ui *::after { box-sizing: border-box; }
+  .ui .lab {
+    font-family: var(--mono); font-size: 9px; letter-spacing: .16em; text-transform: uppercase;
+    color: var(--p-ink3); line-height: 1;
+  }
+  .ui .lab b { font-weight: 500; letter-spacing: .02em; text-transform: none; color: var(--p-ink2); font-size: 10.5px; }
+  .ui .chip {
+    font-size: 11.5px; line-height: 1; padding: 7px 11px; border-radius: 8px;
+    border: 1px solid var(--p-line-2); background: var(--p-bg); color: var(--p-ink2); white-space: nowrap;
+  }
+  .ui .chip.on { border-color: rgba(44,113,80,.5); background: var(--p-accent-soft); color: var(--p-accent); font-weight: 600; }
+  .ui .chip.ghost { border-style: dashed; color: var(--p-ink3); }
+  .ui .btn {
+    height: 36px; padding: 0 16px; border-radius: 9px; display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12.5px; font-weight: 600; letter-spacing: .02em;
+    border: 1px solid var(--p-line-2); background: var(--p-bg); color: var(--p-ink); white-space: nowrap;
+  }
+  .ui .btn.primary { background: var(--p-accent); border-color: transparent; color: #fff; box-shadow: 0 6px 14px -8px rgba(44,113,80,.75); }
+  .ui .btn.ghost { border-color: transparent; background: transparent; color: var(--p-ink2); font-weight: 500; }
+
+  /* ══════════════ ① 现状 ══════════════ */
+  .old { padding: 20px 24px 0; }
+  .old .head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+  .old .kicker { font-family: var(--mono); font-size: 8.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--p-ink3); margin-bottom: 7px; }
+  .old h1 { margin: 0; font-family: var(--serif); font-size: 26px; line-height: 1.15; font-weight: 600; letter-spacing: .02em; }
+  .old h1 em { font-style: normal; font-family: var(--sans); font-size: 11px; font-weight: 400; letter-spacing: .16em; text-transform: uppercase; color: var(--p-ink3); margin-left: 12px; }
+  .old .sub { margin: 8px 0 0; font-size: 12px; line-height: 1.55; color: var(--p-ink2); }
+  .old .status {
+    flex: none; display: flex; align-items: center; gap: 7px; height: 30px; padding: 0 12px 0 10px;
+    border: 1px solid var(--p-line-2); border-radius: 999px; background: var(--p-bg);
+    font-family: var(--mono); font-size: 10.5px; color: var(--p-ink2); margin-top: 4px;
+  }
+  .old .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--p-accent); }
+
+  .old .grid { display: grid; grid-template-columns: 1.02fr .98fr; gap: 16px; margin-top: 16px; height: 640px; }
+  .old .card {
+    border: 1px solid var(--p-line-2); border-radius: 12px; padding: 15px 15px 13px;
+    display: flex; flex-direction: column; gap: 12px; overflow: hidden; min-height: 0;
+  }
+  .old .chips { display: flex; gap: 7px; flex-wrap: wrap; }
+  .old .stylebox {
+    border: 1px solid var(--p-line-2); border-radius: 10px; background: var(--p-bg2);
+    padding: 10px 12px; display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center;
+  }
+  .old .grp { display: flex; align-items: center; gap: 6px; }
+  .old .grp > label { font-family: var(--mono); font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: var(--p-ink3); }
+  .old .seg { display: inline-flex; border: 1px solid var(--p-line-2); border-radius: 7px; overflow: hidden; background: var(--p-bg); }
+  .old .seg i { font-style: normal; font-size: 11px; padding: 5px 9px; color: var(--p-ink2); border-right: 1px solid var(--p-line-2); }
+  .old .seg i:last-child { border-right: 0; }
+  .old .seg i.on { background: var(--p-accent-soft); color: var(--p-accent); font-weight: 600; }
+  .old .step { display: inline-flex; align-items: center; border: 1px solid var(--p-line-2); border-radius: 7px; overflow: hidden; background: var(--p-bg); }
+  .old .step span { font-family: var(--mono); font-size: 12px; padding: 3px 7px; color: var(--p-ink2); }
+  .old .step b { font-family: var(--mono); font-size: 11px; font-weight: 600; min-width: 44px; text-align: center; }
+  .old textarea, .old .ta {
+    flex: 1; min-height: 0; overflow: hidden; border: 1px solid var(--p-line-2); border-radius: 10px;
+    background: var(--p-bg2); padding: 11px 12px; white-space: pre-wrap;
+    font-family: var(--mono); font-size: 11.5px; line-height: 1.78; color: #2a2f28;
+  }
+  .old .hint { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 9.5px; color: var(--p-ink3); }
+  .old .rightcard { gap: 10px; }
+  .old .paperwrap { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 2px 0 0; }
+  .old .paper {
+    width: 268px; height: 379px; background: #fff; border: 1px solid var(--p-line-2); border-radius: 2px;
+    box-shadow: 0 1px 2px rgba(0,0,0,.09), 0 12px 26px -14px rgba(0,0,0,.4); overflow: hidden; flex: none;
+  }
+  .old .paper img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .old .pageno { font-family: var(--mono); font-size: 9px; color: var(--p-ink3); }
+  .old .rules { display: flex; flex-direction: column; }
+  .old .rule { display: flex; align-items: center; gap: 8px; padding: 5.5px 0; font-size: 11px; color: var(--p-ink2); border-bottom: 1px dotted var(--p-line); }
+  .old .rule:last-child { border-bottom: 0; }
+  .old .ic { width: 15px; height: 15px; border-radius: 50%; flex: none; display: grid; place-items: center; font-size: 8.5px; font-weight: 700; }
+  .old .ic.ok { background: var(--p-accent-soft); color: var(--p-accent); }
+  .old .ic.warn { background: #f6ead7; color: #8a5a2b; }
+  .old .sheetbox { border: 1px solid var(--p-line-2); border-radius: 9px; padding: 9px 11px; background: var(--p-bg2); }
+  .old .faces { display: flex; align-items: center; gap: 9px; margin-top: 7px; }
+  .old .face { display: flex; align-items: center; gap: 5px; font-size: 10px; color: var(--p-ink2); }
+  .old .face i { width: 13px; height: 18px; border: 1px solid var(--p-line-2); border-radius: 1.5px; background: #fff; display: block; }
+  .old .face i.back { border-left-width: 2px; }
+  .old .pill {
+    margin-left: auto; font-family: var(--mono); font-size: 9px; padding: 3px 7px; border-radius: 5px;
+    background: var(--p-accent-soft); color: var(--p-accent);
+  }
+  .old .actions { display: flex; align-items: center; gap: 12px; margin-top: 14px; padding-top: 13px; border-top: 1px solid var(--p-line); }
+  .old .spec { display: flex; flex: 1; max-width: 420px; border: 1px solid var(--p-line-2); border-radius: 9px; overflow: hidden; }
+  .old .spec > div { flex: 1; padding: 7px 10px; border-right: 1px solid var(--p-line-2); }
+  .old .spec > div:last-child { border-right: 0; }
+  .old .spec dt { font-family: var(--mono); font-size: 8.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--p-ink3); }
+  .old .spec dd { margin: 2px 0 0; font-size: 11px; font-weight: 500; }
+  .old .btns { display: flex; gap: 9px; margin-left: auto; }
+
+  /* ══════════════ ② 重做 ══════════════ */
+  .new { padding: 24px 28px 18px; }
+  .new .head { display: flex; align-items: center; justify-content: space-between; gap: 20px; height: 44px; flex: none; }
+  .new .brand { display: flex; align-items: center; gap: 11px; }
+  .new .mark { width: 8px; height: 8px; background: var(--p-accent); transform: rotate(45deg); flex: none; }
+  .new h1 { margin: 0; font-family: var(--serif); font-size: 22px; line-height: 1; font-weight: 600; letter-spacing: .03em; }
+  .new h1 em { font-style: normal; font-family: var(--mono); font-size: 8.5px; font-weight: 400; letter-spacing: .18em; text-transform: uppercase; color: var(--p-ink3); margin-left: 10px; vertical-align: 3px; }
+  .new .status {
+    display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 13px 0 11px;
+    border: 1px solid var(--p-line); border-radius: 999px;
+    font-family: var(--mono); font-size: 10.5px; color: var(--p-ink2);
+  }
+  .new .status .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--p-accent); box-shadow: 0 0 0 3px var(--p-accent-soft); }
+  .new .status .sep { width: 1px; height: 12px; background: var(--p-line); }
+  .new .status .cap { color: var(--p-ink3); }
+
+  .new .main { display: grid; grid-template-columns: minmax(0,1fr) 420px; gap: 30px; height: 636px; margin-top: 16px; }
+  .new .doc { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+
+  .new .tpl { display: flex; align-items: center; gap: 10px; height: 26px; flex: none; }
+  .new .tpl .chips { display: flex; gap: 7px; align-items: center; }
+  .new .tpl .right { margin-left: auto; display: flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 9.5px; color: var(--p-ink3); }
+
+  /* 排版尺 */
+  .new .ruler {
+    display: flex; align-items: center; gap: 0; height: 44px; flex: none; margin-top: 10px;
+    border-top: 1px solid var(--p-line); border-bottom: 1px solid var(--p-line);
+  }
+  .new .ruler .g { display: flex; align-items: center; gap: 7px; padding: 0 13px; }
+  .new .ruler .g:first-child { padding-left: 0; }
+  .new .ruler .g:last-child { padding-right: 0; }
+  .new .ruler .sep { width: 1px; height: 16px; background: var(--p-line); flex: none; }
+  .new .ruler .lab { color: var(--p-ink3); font-size: 8.5px; }
+  .new .seg { display: inline-flex; }
+  .new .seg i {
+    font-style: normal; font-size: 11px; line-height: 1; padding: 6px 9px; border-radius: 6px;
+    color: var(--p-ink2); white-space: nowrap;
+  }
+  .new .seg i.on { background: var(--p-accent-soft); color: var(--p-accent); font-weight: 600; }
+  .new .step { display: inline-flex; align-items: center; gap: 2px; }
+  .new .step span { font-size: 12px; color: var(--p-ink3); width: 14px; text-align: center; }
+  .new .step b {
+    font-family: var(--mono); font-size: 11px; font-weight: 600; min-width: 42px; text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+  .new .dirty { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+  .new .dirty .badge {
+    font-family: var(--mono); font-size: 8.5px; letter-spacing: .1em; text-transform: uppercase;
+    padding: 3px 6px; border-radius: 4px; background: #f6ead7; color: #8a5a2b;
+  }
+  .new .dirty .mini {
+    font-size: 10.5px; font-weight: 600; padding: 5px 9px; border-radius: 6px;
+    border: 1px solid rgba(44,113,80,.45); background: var(--p-accent-soft); color: var(--p-accent);
+  }
+  .new .dirty .mini.ghost { border-color: var(--p-line-2); background: transparent; color: var(--p-ink2); font-weight: 500; }
+
+  .new .clabel { display: flex; align-items: baseline; justify-content: space-between; margin: 14px 0 8px; flex: none; }
+  .new .editor {
+    flex: 1; min-height: 0; overflow: hidden; background: var(--p-bg2);
+    border: 1px solid var(--p-line); border-radius: 10px; padding: 14px 16px;
+    font-family: var(--mono); font-size: 12px; line-height: 1.86; color: #2a2f28; white-space: pre-wrap;
+    box-shadow: inset 0 1px 2px rgba(31,35,30,.03);
+  }
+  .new .editor .gutter { color: #b9bcb2; }
+
+  .new .docfoot { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; flex: none; height: 16px; }
+  .new .docfoot .kbd { font-family: var(--mono); font-size: 9.5px; color: var(--p-ink3); }
+  .new .docfoot .kbd b { color: var(--p-ink2); font-weight: 500; }
+  .new .saved { display: flex; align-items: center; gap: 5px; font-family: var(--mono); font-size: 9.5px; color: var(--p-ink3); }
+  .new .saved i { width: 5px; height: 5px; border-radius: 50%; background: #b7c3b5; }
+
+  /* 校样 */
+  .new .proof { display: flex; flex-direction: column; min-height: 0; }
+  .new .proofhead { display: flex; align-items: baseline; justify-content: space-between; height: 20px; flex: none; }
+  .new .proofhead .pg { display: flex; align-items: center; gap: 7px; font-family: var(--mono); font-size: 9.5px; color: var(--p-ink3); }
+  .new .proofhead .pg b { color: var(--p-ink2); font-weight: 500; }
+  .new .mat {
+    flex: none; margin-top: 12px; height: 470px; border-radius: 14px; background: #f4f2ea;
+    display: flex; align-items: center; justify-content: center; position: relative;
+  }
+  .new .mat .paper {
+    width: 304px; height: 430px; background: #fff; border: 1px solid #ddd8cb; border-radius: 2px;
+    box-shadow: 0 1px 2px rgba(0,0,0,.08), 0 18px 34px -18px rgba(0,0,0,.42); overflow: hidden;
+  }
+  .new .mat .paper img { width: 100%; height: 100%; display: block; object-fit: cover; }
+  .new .mat .zoom {
+    position: absolute; right: 12px; bottom: 12px; width: 26px; height: 26px; border-radius: 7px;
+    border: 1px solid rgba(0,0,0,.08); background: rgba(255,255,255,.72); backdrop-filter: blur(4px);
+    display: grid; place-items: center; color: var(--p-ink2); font-size: 11px;
+  }
+  .new .guards { margin-top: 15px; display: flex; flex-direction: column; flex: none; }
+  .new .guards .gh { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 3px; }
+  .new .guards .sum { font-size: 11px; color: var(--p-ink2); }
+  .new .guards .sum b { color: var(--p-accent); font-weight: 600; }
+  .new .guards .sum em { font-style: normal; color: #8a5a2b; }
+  .new .grow { display: flex; align-items: center; gap: 9px; padding: 6px 0; border-bottom: 1px solid var(--p-line); font-size: 11px; color: var(--p-ink2); }
+  .new .grow:last-child { border-bottom: 0; }
+  .new .grow .gl { width: 12px; flex: none; font-size: 10px; line-height: 1; text-align: center; }
+  .new .grow .gl.ok { color: var(--p-accent); }
+  .new .grow .gl.warn { color: #8a5a2b; }
+  .new .grow .gk { margin-left: auto; font-family: var(--mono); font-size: 9px; color: var(--p-ink3); }
+
+  /* 印张条 */
+  .new .ticketbar {
+    display: flex; align-items: center; gap: 14px; flex: none;
+    margin-top: 12px; padding-top: 13px; border-top: 1px solid var(--p-line);
+  }
+  .new .ticket { display: flex; align-items: center; gap: 11px; min-width: 0; }
+  .new .ticket .faces { display: flex; gap: 3px; flex: none; }
+  .new .ticket .faces i {
+    width: 13px; height: 18px; border-radius: 1.5px; display: block;
+    border: 1px solid var(--p-line-2); background: #fff;
+  }
+  .new .ticket .faces i.f { background: var(--p-accent-soft); border-color: rgba(44,113,80,.35); }
+  .new .ticket .faces i.b { border-style: dashed; }
+  .new .ticket .facts { font-family: var(--mono); font-size: 10.5px; color: var(--p-ink2); white-space: nowrap; }
+  .new .ticket .facts b { color: var(--p-ink); font-weight: 600; }
+  .new .ticket .facts .sep { color: #c9c6bc; margin: 0 6px; }
+  .new .state {
+    font-family: var(--mono); font-size: 9px; letter-spacing: .06em; padding: 3px 7px; border-radius: 5px;
+    background: var(--p-accent-soft); color: var(--p-accent);
+  }
+  .new .req { margin-left: auto; display: flex; align-items: center; gap: 9px; flex: none; }
+
+  /* ══ 组件规格区 ══════════════════════════════════════════ */
+  .comps { display: flex; gap: 34px; margin-top: 44px; padding-top: 26px; border-top: 1px solid var(--line); }
+  .comp { flex: 1; min-width: 0; }
+  .comp-head { display: flex; align-items: baseline; gap: 9px; margin-bottom: 4px; }
+  .comp-head .no { font-family: var(--mono); font-size: 8.5px; letter-spacing: .12em; color: var(--green); }
+  .comp-head b { font-size: 12.5px; font-weight: 600; letter-spacing: .02em; }
+  .comp-head span { font-family: var(--mono); font-size: 7.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+  .comp-note { font-size: 10px; line-height: 1.65; color: var(--ink-2); margin: 0 0 12px; min-height: 34px; }
+  .comp-note b { color: var(--ink); font-weight: 600; }
+  .comp-note code { font-family: var(--mono); font-size: 9px; color: var(--green-deep); }
+
+  .demo { border: 1px solid #d5cfc0; border-radius: 10px; background: #fff; padding: 14px 16px; }
+  .demo .lab { font-family: var(--mono); font-size: 8.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--p-ink3); }
+  .demo .lab b { font-family: var(--mono); font-size: 10px; font-weight: 500; text-transform: none; letter-spacing: .01em; color: var(--p-ink2); }
+
+  /* ══ 底部变更清单 ══════════════════════════════════════ */
+  .changes { display: grid; grid-template-columns: 1fr 1fr; gap: 0 56px; }
+  .ch { display: grid; grid-template-columns: 118px 1fr 1fr; gap: 14px; padding: 9px 0; border-bottom: 1px dotted var(--line); align-items: baseline; }
+  .ch .k { font-family: var(--mono); font-size: 8.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
+  .ch .a { font-size: 10.5px; color: #9b6a5c; line-height: 1.5; }
+  .ch .b { font-size: 10.5px; color: var(--ink); line-height: 1.5; }
+  .ch .b b { color: var(--green-deep); font-weight: 600; }
+</style>
+</head>
+<body class="sheet-body">
+<span class="crop tl"></span><span class="crop tr"></span><span class="crop bl"></span><span class="crop br"></span>
+
+<div class="sheet">
+  <!-- ── 页头 ─────────────────────────────────────────────── -->
+  <header class="sheet-head">
+    <div>
+      <div class="sheet-kicker">
+        <span class="sheet-mark"></span>dsh-doc · design sheet 02
+        <span class="sheet-tag">Layout Redo</span>
+      </div>
+      <h1 class="sheet-h1">打印工坊 · 布局重做<em>Proofing Desk</em></h1>
+      <p class="sheet-sub">
+        现状的问题不是「不好看」，是**读者找不到该看哪儿**：六层边框、五组控件挤在两行里、同一组纸张事实说三遍。
+        重做把界面收成三个面——<b>稿面</b>（写）、<b>校样垫</b>（看纸）、<b>印张条</b>（出纸），
+        纸的事实只说一次，控件排成一把尺。
+      </p>
+    </div>
+    <div class="sheet-meta">
+      <div class="mrow"><span>Surface</span><b>Print Studio panel · 1240 × 800</b></div>
+      <div class="mrow"><span>States</span><b>BEFORE / AFTER</b></div>
+      <div class="mrow"><span>Tokens</span><b>accent #2C7150 · paper #F4F2EA</b></div>
+      <div class="mrow"><span>Date</span><b>2026.11.08</b></div>
+    </div>
+  </header>
+
+  <!-- ── 两态并列 ─────────────────────────────────────────── -->
+  <section style="display:flex; gap:48px; margin-top:30px;">
+
+    <!-- ① 现状 -->
+    <div style="flex:none;">
+      <div class="stage">
+        <div class="frame">
+          <div class="scaler">
+            <div class="ui old">
+            <div class="head">
+              <div>
+                <div class="kicker">dsh plugin · dsh-doc</div>
+                <h1>打印工坊<em>lecture workshop</em></h1>
+                <p class="sub">把一段文字排成讲义并直接打印。左边调版式、右边实时看分页，确认后再出纸。</p>
+              </div>
+              <div class="status"><span class="dot"></span>HP_LaserJet_MFP_M232dw__6FACF2_</div>
+            </div>
+
+            <div class="grid">
+              <div class="card">
+                <div class="lab">版式</div>
+                <div class="chips"><span class="chip on">通用讲义</span><span class="chip ghost">+ 新模板</span></div>
+                <div class="stylebox">
+                  <div class="lab" style="width:100%">排版</div>
+                  <div class="grp"><label>字体</label><span class="seg"><i class="on">文楷</i><i>宋体</i><i>楷体</i><i>黑体</i></span></div>
+                  <div class="grp"><label>字号</label><span class="step"><span>−</span><b>10.5pt</b><span>+</span></span></div>
+                  <div class="grp"><label>行距</label><span class="step"><span>−</span><b>1.55×</b><span>+</span></span></div>
+                  <div class="grp"><label>边距</label><span class="step"><span>−</span><b>18mm</b><span>+</span></span></div>
+                  <div class="grp"><label>栏数</label><span class="seg"><i class="on">单栏</i><i>双栏</i></span></div>
+                </div>
+                <div class="lab">内容<b>298 字</b></div>
+                <div class="ta" id="ta-old"></div>
+                <div class="hint"><span>⌘↵ 渲染</span><span>已渲染</span></div>
+              </div>
+
+              <div class="card rightcard">
+                <div class="lab">预览<b>1 页 · A4</b></div>
+                <div class="paperwrap">
+                  <div class="paper"><img src="specimens/v0-current.png" alt="current poem render"></div>
+                  <div class="pageno">1</div>
+                </div>
+                <div class="lab">分页校验<b>3 / 4</b></div>
+                <div class="rules">
+                  <div class="rule"><span class="ic ok">✓</span><span>纸张 A4 · 与预览一致</span></div>
+                  <div class="rule"><span class="ic warn">!</span><span>奇数页：最后一张背面会空白</span></div>
+                  <div class="rule"><span class="ic ok">✓</span><span>题目与答法锁定（keep-together）</span></div>
+                </div>
+                <div class="sheetbox">
+                  <div class="lab" style="display:flex; justify-content:space-between; gap:8px;">纸张分摊<b>1 张 · 长边翻页</b></div>
+                  <div class="faces">
+                    <div class="face"><i></i><span>正面 第 1 页</span></div>
+                    <span class="pill">长边翻页</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="actions">
+              <div class="spec">
+                <div><dt>纸张</dt><dd>A4</dd></div>
+                <div><dt>页数</dt><dd>1 页</dd></div>
+                <div><dt>双面</dt><dd>长边翻页</dd></div>
+                <div><dt>用纸</dt><dd>1 张</dd></div>
+              </div>
+              <div class="btns">
+                <span class="btn">重新渲染</span>
+                <span class="btn primary">打印 1 页</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+        <!-- pins -->
+        <span class="pin warn" style="left:318px; top:22px;">1</span>
+        <span class="pin warn" style="left:186px; top:222px;">2</span>
+        <span class="pin warn" style="left:604px; top:404px;">3</span>
+        <span class="pin warn" style="left:592px; top:452px;">4</span>
+        <span class="pin warn" style="left:540px; top:474px;">5</span>
+        <span class="pin warn" style="left:150px; top:470px;">6</span>
+      </div>
+      <div class="stage-foot">
+        <b>① 现状</b>
+        <span class="delta">6 层框 · 3 处重复 · 2 行参差</span>
+      </div>
+    </div>
+
+    <!-- ② 重做 -->
+    <div style="flex:none;">
+      <div class="stage">
+        <div class="frame">
+          <div class="scaler">
+            <div class="ui new">
+            <!-- header -->
+            <div class="head">
+              <div class="brand">
+                <span class="mark"></span>
+                <h1>打印工坊<em>Lecture Workshop</em></h1>
+              </div>
+              <div class="status">
+                <span class="dot"></span>HP_LaserJet_MFP_M232dw
+                <span class="sep"></span>
+                <span class="cap">A4 · 双面长边</span>
+              </div>
+            </div>
+
+            <div class="main">
+              <!-- 稿面 -->
+              <div class="doc">
+                <div class="tpl">
+                  <span class="lab">版式</span>
+                  <div class="chips" style="margin-left:10px">
+                    <span class="chip on">通用讲义</span>
+                    <span class="chip ghost">+ 新模板</span>
+                  </div>
+                  <div class="right"><span>已保存 12:04</span></div>
+                </div>
+
+                <div class="ruler">
+                  <div class="g">
+                    <span class="lab">字体</span>
+                    <span class="seg"><i class="on">文楷</i><i>宋体</i><i>楷体</i><i>黑体</i></span>
+                  </div>
+                  <div class="sep"></div>
+                  <div class="g">
+                    <span class="lab">字号</span>
+                    <span class="step"><span>−</span><b>10.5pt</b><span>+</span></span>
+                  </div>
+                  <div class="sep"></div>
+                  <div class="g">
+                    <span class="lab">行距</span>
+                    <span class="step"><span>−</span><b>1.55×</b><span>+</span></span>
+                  </div>
+                  <div class="sep"></div>
+                  <div class="g">
+                    <span class="lab">边距</span>
+                    <span class="step"><span>−</span><b>18mm</b><span>+</span></span>
+                  </div>
+                  <div class="sep"></div>
+                  <div class="g">
+                    <span class="lab">栏数</span>
+                    <span class="seg"><i class="on">单栏</i><i>双栏</i></span>
+                  </div>
+                </div>
+
+                <div class="clabel">
+                  <span class="lab">内容</span>
+                  <span class="lab"><b>298 字</b></span>
+                </div>
+                <div class="editor" id="ta-new"></div>
+                <div class="docfoot">
+                  <span class="kbd"><b>⌘↵</b> 渲染 · <b>⌘S</b> 保存模板</span>
+                  <span class="saved"><i></i>草稿已自动保存</span>
+                </div>
+              </div>
+
+              <!-- 校样 -->
+              <div class="proof">
+                <div class="proofhead">
+                  <span class="lab">校样</span>
+                  <span class="pg"><b>A4</b> · <b>1 页</b> · 300 dpi</span>
+                </div>
+                <div class="mat">
+                  <div class="paper"><img src="specimens/v2-stanza.png" alt="proof preview"></div>
+                  <div class="zoom">⤢</div>
+                </div>
+                <div class="guards">
+                  <div class="gh">
+                    <span class="lab">分页校验</span>
+                    <span class="sum"><b>3 项通过</b> · <em>1 项提示</em></span>
+                  </div>
+                  <div class="grow"><span class="gl ok">✓</span><span>纸张 A4 · 与预览一致</span></div>
+                  <div class="grow"><span class="gl warn">!</span><span>奇数页：最后一张背面会空白</span><span class="gk">duplexOdd</span></div>
+                  <div class="grow"><span class="gl ok">✓</span><span>题目与答法锁定</span></div>
+                  <div class="grow"><span class="gl ok">✓</span><span>诗行左缘已对齐 · 四句分节</span><span class="gk">poem</span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 印张条 -->
+            <div class="ticketbar">
+              <div class="ticket">
+                <span class="faces"><i class="f"></i><i class="b"></i></span>
+                <span class="facts">
+                  <b>A4</b><span class="sep">·</span>双面长边<span class="sep">·</span><b>1 页</b>
+                  <span class="sep">/</span><b>1 张</b><span class="sep">·</span>背面空白
+                </span>
+                <span class="state">已渲染</span>
+              </div>
+              <div class="req">
+                <span class="btn ghost">重新渲染</span>
+                <span class="btn primary">打印 1 页</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+        <!-- pins -->
+        <span class="pin good" style="left:140px; top:24px;">1</span>
+        <span class="pin good" style="left:250px; top:136px;">2</span>
+        <span class="pin good" style="left:742px; top:520px;">3</span>
+        <span class="pin good" style="left:560px; top:470px;">4</span>
+        <span class="pin good" style="left:120px; top:528px;">5</span>
+        <span class="pin good" style="left:596px; top:344px;">6</span>
+      </div>
+      <div class="stage-foot">
+        <b>② 重做</b>
+        <span class="delta">3 个面 · 1 处事实 · 1 行尺</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 图例 ─────────────────────────────────────────────── -->
+  <section style="display:flex; gap:48px; margin-top:26px;">
+    <div style="width:1066px; flex:none;">
+      <div class="sec-head"><span class="no">DIAG</span><span class="en">diagnosis</span><span class="rule"></span></div>
+      <div class="legend" style="display:grid; grid-template-columns:1fr 1fr; gap:0 40px;">
+        <div class="legend-item warn"><i>1</i><div><b>页头吃掉 86px，却只说了三句废话</b><p>kicker「dsh plugin · dsh-doc」、大标题、三行副标题——都占着最贵的垂直空间。副标题讲的是面板自己会演示的事。</p></div></div>
+        <div class="legend-item warn"><i>2</i><div><b>排版条两行参差</b><p>五组控件宽度不等（字体 4 段 / 三个步进 / 栏数 2 段），<code>flex-wrap</code> 一换行，第二行的起点就落在随机位置，还独自塞进一个框。</p></div></div>
+        <div class="legend-item warn"><i>3</i><div><b>纸张事实说三遍</b><p>右栏「纸张分摊 1 张·长边翻页」、底栏四格「纸张/页数/双面/用纸」、按钮「打印 1 页」——同一件事三种写法。</p></div></div>
+        <div class="legend-item warn"><i>4</i><div><b>纸下孤零零一个「1」</b><p>图内页脚已经写着「第 1 页 / 共 1 页」，外面的页码是第二份；而预览图还被 <code>max-height:46vh</code> 卡住，上下留白不齐。</p></div></div>
+        <div class="legend-item warn"><i>5</i><div><b>「3 / 4」在标题行，列表在下面</b><p>摘要与内容隔着 12px，读者要先对一次数才明白「3 项通过、1 项提示」。</p></div></div>
+        <div class="legend-item warn"><i>6</i><div><b>六层边框</b><p>卡片框 → 控制条框 → 输入框框 → 纸张盒框 → 规格表框 → 按钮，层层画框，没有一层是「面」。</p></div></div>
+      </div>
+    </div>
+    <div style="flex:1;">
+      <div class="sec-head"><span class="no">FIX</span><span class="en">what changed</span><span class="rule"></span></div>
+      <div class="legend">
+        <div class="legend-item good"><i>1</i><div><b>页头一行 44px</b><p>删 kicker（它只是标签，标题自己会说话）；副标题只在空态出现。打印机胶囊里合并纸张能力「A4 · 双面长边」，右上角不再需要两处状态。</p></div></div>
+        <div class="legend-item good"><i>2</i><div><b>排版尺：一行五格，发丝线分隔</b><p>去掉外框，五组等间距排在同一条尺上，组间用 1px 竖发丝线断开。控件只剩两种：分段（字体、栏数）与步进（字号、行距、边距）——形状本身就是语义。</p></div></div>
+        <div class="legend-item good"><i>3</i><div><b>印张条：事实只出现一次</b><p>底栏一条：正反两张小纸 + 「A4 · 双面长边 · 1 页 / 1 张 · 背面空白」+ 状态。它同时承担「这次要出几张纸」这个唯一的承诺。</p></div></div>
+        <div class="legend-item good"><i>4</i><div><b>校样垫</b><p>纸浮在 <code>#F4F2EA</code> 衬底上，按列宽铺满（不再被 46vh 卡住），页码只在纸内页脚出现一次；右下角小放大键接管点开看大图。</p></div></div>
+        <div class="legend-item good"><i>5</i><div><b>校验改成一句话</b><p>「3 项通过 · 1 项提示」与列表同一行，条目保留 ✓ / ! 字形而不是圆形图标——去掉一圈装饰，保留判断。</p></div></div>
+        <div class="legend-item good"><i>6</i><div><b>三个面，零嵌套</b><p>稿面（纸色编辑区）、校样垫（衬底 + 纸）、印张条（发丝线 + 按钮）。界面高度从 6 个框降到 3 个面，剩下的全是发丝线。</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 组件规格 ─────────────────────────────────────────── -->
+  <section style="margin-top:40px;">
+    <div class="sec-head"><span class="no">SPEC</span><h2>零件</h2><span class="en">components at 1:1</span><span class="rule"></span></div>
+    <div class="comps">
+
+      <div class="comp" style="flex:1.25">
+        <div class="comp-head"><span class="no">C1</span><b>排版尺</b><span>type rule · 44px</span></div>
+        <p class="comp-note">常驻一行，不折叠。改任一项 → 统计条右侧出现「未保存 · 撤销 · 保存」，保存写入当前模板。</p>
+        <div class="demo" style="padding:0; overflow:hidden;">
+          <div class="ui new" style="width:100%; height:auto; display:block; padding:10px 16px;">
+            <div class="ruler" style="margin:0; border:0; padding:0;">
+              <div class="g"><span class="lab">字体</span><span class="seg"><i>文楷</i><i class="on">宋体</i><i>楷体</i><i>黑体</i></span></div>
+              <div class="sep"></div>
+              <div class="g"><span class="lab">字号</span><span class="step"><span>−</span><b>11.5pt</b><span>+</span></span></div>
+              <div class="sep"></div>
+              <div class="g"><span class="lab">行距</span><span class="step"><span>−</span><b>1.60×</b><span>+</span></span></div>
+              <div class="sep"></div>
+              <div class="g"><span class="lab">边距</span><span class="step"><span>−</span><b>18mm</b><span>+</span></span></div>
+              <div class="dirty"><span class="badge">未保存</span><span class="mini ghost">撤销</span><span class="mini">保存</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="comp" style="flex:.95">
+        <div class="comp-head"><span class="no">C2</span><b>印张条</b><span>sheet ticket · 60px</span></div>
+        <p class="comp-note">左：正反两面 + 事实句（纸张 · 双面 · 页数 / 张数 · 备注）。右：两个动作，主按钮永远只说「这一下会发生什么」。</p>
+        <div class="demo" style="padding:0; overflow:hidden;">
+          <div class="ui new" style="width:100%; height:auto; display:block; padding:10px 16px;">
+            <div class="ticketbar" style="margin:0; border:0; padding:6px 0;">
+              <div class="ticket">
+                <span class="faces"><i class="f"></i><i class="b"></i><i class="f" style="opacity:.35"></i><i class="b" style="opacity:.35"></i></span>
+                <span class="facts"><b>A4</b><span class="sep">·</span>双面长边<span class="sep">·</span><b>3 页</b><span class="sep">/</span><b>2 张</b><span class="sep">·</span>第 2 张背面空白</span>
+              </div>
+              <div class="req">
+                <span class="btn ghost">重新渲染</span>
+                <span class="btn primary">打印 3 页</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="comp" style="flex:.95">
+        <div class="comp-head"><span class="no">C3</span><b>校验行</b><span>guard row · 30px</span></div>
+        <p class="comp-note">字形代替图标：<code>✓</code> 通过、<code>!</code> 提示、<code>×</code> 失败。右侧灰 mono 是语义码，方便 Agent 与测试对齐，不承担阅读。</p>
+        <div class="demo" style="padding:0; overflow:hidden;">
+          <div class="ui new" style="width:100%; height:auto; display:block; padding:10px 16px 12px;">
+            <div class="guards" style="margin:0">
+              <div class="gh"><span class="lab">分页校验</span><span class="sum"><b>3 项通过</b> · <em>1 项提示</em></span></div>
+              <div class="grow"><span class="gl ok">✓</span><span>纸张 A4 · 与预览一致</span><span class="gk">paper</span></div>
+              <div class="grow"><span class="gl warn">!</span><span>奇数页：最后一张背面会空白</span><span class="gk">duplexOdd</span></div>
+              <div class="grow"><span class="gl ok">✓</span><span>题目与答法锁定</span><span class="gk">keepTogether</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 变更清单 ─────────────────────────────────────────── -->
+  <section style="margin-top:38px;">
+    <div class="sec-head"><span class="no">DELTA</span><h2>改动清单</h2><span class="en">css &amp; dom</span><span class="rule"></span></div>
+    <div class="changes">
+      <div class="ch"><span class="k">页头</span><span class="a">kicker + 26px 标题 + 三行副标题 = 86px</span><span class="b"><b>单行 44px</b>；kicker 删除，副标题移入空态</span></div>
+      <div class="ch"><span class="k">容器</span><span class="a">2 张大卡 + 3 个内嵌框</span><span class="b"><b>3 个面</b>：稿面 / 校样垫 / 印张条</span></div>
+      <div class="ch"><span class="k">排版条</span><span class="a"><code>flex-wrap</code> 两行，宽度不均</span><span class="b"><b>单行五格</b>，发丝竖线分隔，去外框</span></div>
+      <div class="ch"><span class="k">纸张事实</span><span class="a">3 处（右栏盒 / 底栏表 / 按钮）</span><span class="b"><b>1 处</b>（印张条）</span></div>
+      <div class="ch"><span class="k">校验</span><span class="a">圆点图标 + 计数 3/4 在标题行</span><span class="b"><b>一句话摘要</b> + 字形 + 语义码</span></div>
+      <div class="ch"><span class="k">预览</span><span class="a"><code>max-height:46vh</code>，页码重复</span><span class="b"><b>校样垫铺满列宽</b>，页码只在纸内</span></div>
+      <div class="ch"><span class="k">动作</span><span class="a">四格规格表 + 两个按钮</span><span class="b"><b>发丝线 + 两按钮</b>，主按钮带对象</span></div>
+      <div class="ch"><span class="k">数字</span><span class="a">比例字宽，跳动</span><span class="b"><code>tabular-nums</code> 全部指标</span></div>
+    </div>
+  </section>
+</div>
+
+<script>
+  // 稿面内容（左栏编辑器 / 现状文本域）：同一份示例文本
+  const POEM = `春江花月夜
+唐 · 张若虚
+春江潮水连海平，海上明月共潮生。
+滟滟随波千万里，何处春江无月明？
+江流宛转绕芳甸，月照花林皆似霰。
+空里流霜不觉飞，汀上白沙看不见。
+江天一色无纤尘，皎皎空中孤月轮。
+江畔何人初见月，江月何年初照人？
+人生代代无穷已，江月年年望相似。
+不知江月待何人？但见长江送流水。
+白云一片去悠悠，青枫浦上不胜愁。
+谁家今夜扁舟子，何处相思明月楼？
+可怜楼上月徘徊，应照离人妆镜台。
+玉户帘中卷不去，捣衣砧上拂还来。
+此时相望不相闻，愿逐月华流照君。
+鸿雁长飞光不度，鱼龙潜跃水成文。
+昨夜闲潭梦落花，可怜春半不还家。
+江水流春去欲尽，江潭落月复西斜。
+斜月沉沉藏海雾，碣石潇湘无限路。
+不知乘月几人归，落月摇情满江树。`;
+  document.getElementById('ta-old').textContent = POEM;
+  document.getElementById('ta-new').textContent = POEM;
+</script>
+</body>
+</html>

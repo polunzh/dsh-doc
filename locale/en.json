@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Print Studio",
+    "description": "Render text or Markdown into a print-ready A4 PDF, probe LAN printer capabilities, print duplex, and report the paper receipt."
+  }
+}

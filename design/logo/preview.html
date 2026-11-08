@@ -1,0 +1,89 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
+<style>
+  :root{--paper:#F2EEE5;--ink:#1D211C;--ink2:#565C52;--ink3:#8A8F84;--green:#1F5C3F;--seal:#B3472F;--line:#D9D3C5}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{width:1320px;background:var(--paper);padding:44px 48px 40px;font-family:-apple-system,"PingFang SC",sans-serif;color:var(--ink);
+       background-image:radial-gradient(rgba(29,33,28,.12) .7px,transparent .7px);background-size:5px 5px}
+  .kick{font:10px/1 ui-monospace,monospace;letter-spacing:.22em;color:var(--ink3);margin-bottom:10px}
+  h1{font-family:"Songti SC",serif;font-size:34px;font-weight:600;letter-spacing:.02em}
+  h1 em{font:400 12px/1 ui-monospace,monospace;letter-spacing:.18em;color:var(--ink3);margin-left:14px;font-style:normal}
+  .sub{margin-top:8px;font-size:12px;color:var(--ink2)}
+  h2{font:10px/1 ui-monospace,monospace;letter-spacing:.2em;color:var(--ink3);margin:34px 0 14px;text-transform:uppercase}
+  .row{display:flex;gap:28px;align-items:flex-end;flex-wrap:wrap}
+  .tile{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px;display:flex;flex-direction:column;align-items:center;gap:12px}
+  .tile.dark{background:#20241F;border-color:#2E332C;color:#EDEAE2}
+  .tile span{font:9px/1 ui-monospace,monospace;letter-spacing:.12em;color:var(--ink3)}
+  .tile.dark span{color:#8E9488}
+  img{display:block}
+  .sizes{display:flex;gap:26px;align-items:flex-end;flex-wrap:wrap}
+  .s{display:flex;flex-direction:column;align-items:center;gap:8px}
+  .s b{font:9px/1 ui-monospace,monospace;color:var(--ink3);font-weight:400}
+  .side{display:flex;gap:22px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 22px}
+  .side.dark{background:#1C201B;border-color:#2C312B}
+  .rail{display:flex;flex-direction:column;align-items:center;gap:14px;padding:14px 10px;border-radius:12px;background:rgba(0,0,0,.03)}
+  .side.dark .rail{background:rgba(255,255,255,.05)}
+  .rail i{display:grid;place-items:center;width:34px;height:34px;border-radius:9px;color:var(--ink2)}
+  .side.dark .rail i{color:#C9CFC3}
+  .rail i.on{background:color-mix(in srgb,var(--green) 14%,transparent);color:var(--green)}
+  .side.dark .rail i.on{background:rgba(46,112,80,.28);color:#9ED3B4}
+  .rail svg{width:19px;height:19px}
+  .lock{border:1px solid var(--line);border-radius:16px;overflow:hidden;width:760px}
+  .lock img{width:100%}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+  .note{font-size:11px;color:var(--ink2);line-height:1.7;margin-top:10px}
+  .pal{display:flex;gap:10px;margin-top:12px}
+  .pal div{width:64px}
+  .pal i{display:block;height:30px;border-radius:6px;border:1px solid rgba(0,0,0,.08)}
+  .pal span{display:block;font:8px/1 ui-monospace,monospace;color:var(--ink3);margin-top:5px}
+</style></head><body>
+  <div class="kick">DSH PLUGIN · dsh-doc</div>
+  <h1>打印工坊<em>PRINT STUDIO / IDENTITY</em></h1>
+  <p class="sub">一台正在出纸的打印机——进纸、机身、出纸三层叠出，页面上已经排出标题与正文。</p>
+
+  <h2>01 主标</h2>
+  <div class="row">
+    <div class="tile"><img src="mark.svg" width="200" height="200"><span>512 · PLUGIN / APP</span></div>
+    <div class="tile dark"><img src="mark.svg" width="200" height="200"><span>ON DARK</span></div>
+    <div class="lock"><img src="lockup.svg"><div class="note" style="padding:0 18px 16px">横排锁定版：打印机标 + 宋体字标 + 等宽副行</div></div>
+  </div>
+
+  <h2>02 多尺寸</h2>
+  <div class="sizes" style="background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px 26px">
+    <div class="s"><img src="mark.svg" width="128" height="128"><b>128</b></div>
+    <div class="s"><img src="mark.svg" width="96" height="96"><b>96</b></div>
+    <div class="s"><img src="mark.svg" width="64" height="64"><b>64</b></div>
+    <div class="s"><img src="mark.svg" width="48" height="48"><b>48</b></div>
+    <div class="s"><img src="mark.svg" width="32" height="32"><b>32</b></div>
+    <div class="s"><img src="mark.svg" width="24" height="24"><b>24</b></div>
+  </div>
+
+  <h2>03 侧栏单色符号</h2>
+  <div class="grid">
+    <div class="side">
+      <div class="rail">
+        <i><img src="mark-mono.svg"></i>
+        <i class="on"><img src="mark-mono.svg"></i>
+        <i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="3"/></svg></i>
+      </div>
+      <div class="note">左边是未选中，右边是选中态（绿色描边 + 浅绿底）。<br>24px 以下仍能看出是打印机：顶部进纸口、机身、出纸托盘。</div>
+    </div>
+    <div class="side dark">
+      <div class="rail">
+        <i><img src="mark-mono.svg"></i>
+        <i class="on"><img src="mark-mono.svg"></i>
+        <i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="3"/></svg></i>
+      </div>
+      <div class="note" style="color:#B7BDB2">深色主题下用 currentColor，自动跟随。</div>
+    </div>
+  </div>
+
+  <h2>04 色板</h2>
+  <div class="pal">
+    <div><i style="background:#1F5C3F"></i><span>#1F5C3F</span></div>
+    <div><i style="background:#34D399"></i><span>#34D399</span></div>
+    <div><i style="background:#B3472F"></i><span>#B3472F</span></div>
+    <div><i style="background:#F2EEE5"></i><span>#F2EEE5</span></div>
+    <div><i style="background:#C9DCCF"></i><span>#C9DCCF</span></div>
+    <div><i style="background:#1D211C"></i><span>#1D211C</span></div>
+  </div>
+</body></html>

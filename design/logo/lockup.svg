@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 200" role="img" aria-label="Print Studio Lockup">
+  <rect width="760" height="200" fill="#F2EEE5"/>
+  <!-- 缩小版打印机图标 -->
+  <g transform="translate(36 28) scale(0.282)">
+    <!-- 顶部进纸 -->
+    <path d="M144 80h224a12 12 0 0 1 12 12v118H132V92a12 12 0 0 1 12-12Z" fill="#F8F6F0" stroke="#D3CDC0" stroke-width="8"/>
+    <!-- 出纸 -->
+    <rect x="136" y="240" width="240" height="200" rx="14" fill="#FFFFFF" stroke="#D8D2C5" stroke-width="8"/>
+    <rect x="164" y="272" width="96" height="14" rx="4" fill="#1F5C3F"/>
+    <rect x="164" y="296" width="184" height="8" rx="4" fill="#4B564E"/>
+    <rect x="164" y="316" width="160" height="8" rx="4" fill="#4B564E"/>
+    <rect x="164" y="348" width="60" height="12" rx="3" fill="#1F5C3F"/>
+    <rect x="164" y="372" width="184" height="8" rx="4" fill="#4B564E"/>
+    <!-- 机身 -->
+    <rect x="76" y="172" width="360" height="152" rx="26" fill="#1F5C3F"/>
+    <rect x="116" y="238" width="280" height="42" rx="8" fill="#0C2016"/>
+    <circle cx="112" cy="216" r="8" fill="#34D399"/>
+    <circle cx="132" cy="216" r="6" fill="#A7F3D0"/>
+  </g>
+  <!-- 文字标 -->
+  <text x="200" y="104" font-family="'Songti SC', 'STSong', serif" font-size="52" font-weight="600" fill="#1D211C" letter-spacing="2">打印工坊</text>
+  <text x="202" y="142" font-family="'SF Mono', ui-monospace, Menlo, monospace" font-size="14" font-weight="600" fill="#1F5C3F" letter-spacing="4">PRINT STUDIO · DUPLEX</text>
+</svg>

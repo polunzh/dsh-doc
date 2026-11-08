@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>dsh-doc · 讲义工坊 · 设计稿</title>
+<style>
+  :root{
+    --paper:#F2EEE5;
+    --paper-2:#EAE5D9;
+    --card:#FFFFFF;
+    --ink:#1D211C;
+    --ink-2:#565C52;
+    --ink-3:#8C9187;
+    --line:#D9D3C5;
+    --line-soft:#E8E3D7;
+    --green:#1F5C3F;
+    --green-2:#2E7050;
+    --green-soft:#E9F0EA;
+    --seal:#B3472F;
+    --seal-soft:#F7E7E2;
+    --sans:"PingFang SC","Helvetica Neue",-apple-system,"Segoe UI",sans-serif;
+    --serif:"Songti SC","STSong","Times New Roman",serif;
+    --mono:"SF Mono","JetBrains Mono","Menlo",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:1480px}
+  body{
+    background:
+      radial-gradient(circle at 18% 8%, rgba(255,255,255,.85), transparent 46%),
+      radial-gradient(circle at 82% 92%, rgba(214,205,186,.55), transparent 52%),
+      var(--paper);
+    font-family:var(--sans);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    padding:46px 56px 38px;
+    position:relative;
+  }
+  body::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background-image:radial-gradient(rgba(29,33,28,.13) .7px, transparent .7px);
+    background-size:5px 5px;opacity:.5;
+  }
+  .sheet{position:relative;z-index:1}
+
+  /* ── header ─────────────────────────────── */
+  header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:34px}
+  .brand{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+  .mark{width:9px;height:9px;background:var(--green);transform:rotate(45deg)}
+  .brand small{font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;color:var(--ink-3);text-transform:uppercase}
+  h1{font-family:var(--serif);font-size:46px;font-weight:600;letter-spacing:.02em;line-height:1}
+  h1 em{font-style:normal;font-size:17px;font-family:var(--sans);font-weight:400;color:var(--ink-3);margin-left:16px;letter-spacing:.08em;vertical-align:middle}
+  .sub{margin-top:12px;font-size:12.5px;color:var(--ink-2);letter-spacing:.02em}
+  .meta{text-align:right;font-family:var(--mono);font-size:10.5px;line-height:1.9;color:var(--ink-3);letter-spacing:.06em}
+  .meta b{display:block;font-family:var(--sans);font-size:12px;color:var(--ink);font-weight:500;letter-spacing:.04em}
+
+  /* ── artboards ──────────────────────────── */
+  .row{display:flex;gap:42px;align-items:flex-start}
+  .board{width:400px}
+  .cap{display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-left:2px}
+  .cap i{
+    font-style:normal;font-family:var(--mono);font-size:9.5px;color:var(--paper);
+    background:var(--ink);width:16px;height:16px;border-radius:50%;
+    display:grid;place-items:center;letter-spacing:0
+  }
+  .cap b{font-size:12.5px;font-weight:600;letter-spacing:.03em}
+  .cap span{font-size:10.5px;color:var(--ink-3);font-family:var(--mono);letter-spacing:.06em}
+
+  .panel{
+    width:400px;height:812px;background:var(--card);border:1px solid var(--line);
+    border-radius:16px;overflow:hidden;position:relative;
+    box-shadow:0 1px 1px rgba(29,33,28,.04),0 18px 38px -18px rgba(29,33,28,.28);
+    display:flex;flex-direction:column;
+  }
+  /* panel head */
+  .phead{padding:17px 20px 15px;border-bottom:1px solid var(--line-soft);display:flex;align-items:center;justify-content:space-between}
+  .phead .t{display:flex;align-items:baseline;gap:8px}
+  .phead h2{font-family:var(--serif);font-size:17px;font-weight:600;letter-spacing:.04em}
+  .phead .en{font-family:var(--mono);font-size:8.5px;letter-spacing:.2em;color:var(--ink-3);text-transform:uppercase}
+  .stat{display:flex;align-items:center;gap:6px;font-size:10.5px;color:var(--ink-2);font-family:var(--mono);letter-spacing:.02em}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px var(--green-soft)}
+  .dot.warn{background:var(--seal);box-shadow:0 0 0 3px var(--seal-soft)}
+
+  .body{flex:1;padding:18px 20px;display:flex;flex-direction:column;gap:16px;overflow:hidden}
+
+  .lab{font-family:var(--mono);font-size:9px;letter-spacing:.18em;color:var(--ink-3);text-transform:uppercase;margin-bottom:7px;display:flex;justify-content:space-between;align-items:center}
+  .lab b{font-family:var(--sans);font-size:10px;font-weight:500;color:var(--ink-3);letter-spacing:.02em;text-transform:none}
+
+  /* template chips */
+  .chips{display:flex;gap:7px;flex-wrap:wrap}
+  .chip{font-size:11.5px;padding:7px 11px;border:1px solid var(--line);border-radius:8px;color:var(--ink-2);background:#FCFBF8;letter-spacing:.01em}
+  .chip.on{border-color:var(--green);color:var(--green);background:var(--green-soft);font-weight:600}
+  .chip.ghost{border-style:dashed;color:var(--ink-3)}
+
+  /* editor */
+  .editor{
+    border:1px solid var(--line);border-radius:10px;background:#FDFCFA;
+    padding:12px 13px;font-family:var(--mono);font-size:10.5px;line-height:1.85;color:var(--ink-2);
+    height:186px;overflow:hidden;position:relative;
+  }
+  .editor .h{color:var(--green);font-weight:600}
+  .editor .q{color:var(--ink)}
+  .editor .a{color:var(--ink-3)}
+  .editor .caret{display:inline-block;width:1px;height:11px;background:var(--ink);vertical-align:-2px;margin-left:1px}
+  .editor .fade{position:absolute;left:0;right:0;bottom:0;height:44px;background:linear-gradient(transparent,#FDFCFA 72%)}
+
+  /* preview */
+  .preview{flex:1;display:flex;flex-direction:column;min-height:0}
+  .empty{
+    flex:1;border:1px dashed var(--line);border-radius:10px;background:
+      linear-gradient(180deg,#FDFCFA,#FAF8F3);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--ink-3);
+  }
+  .empty svg{opacity:.42}
+  .empty .e1{font-size:12px;color:var(--ink-2)}
+  .empty .e2{font-size:10.5px;font-family:var(--mono);letter-spacing:.04em}
+
+  .pages{display:flex;gap:14px;align-items:flex-start;margin-top:16px}
+  .pg{position:relative}
+  .page.lg{width:168px;height:238px;padding:14px 12px}
+  .page.lg .band{height:13px}
+  .page.lg .l{height:2px;margin-bottom:3px}
+  .page.lg .ql{margin-bottom:5px}
+  .page{
+    width:150px;height:212px;background:#fff;border:1px solid #E2DDD0;border-radius:2px;
+    box-shadow:0 1px 2px rgba(29,33,28,.10),0 8px 18px -10px rgba(29,33,28,.35);
+    padding:12px 11px;overflow:hidden;position:relative;
+  }
+  .page .band{height:11px;background:var(--green);border-radius:1px;margin-bottom:2px}
+  .page .band2{height:3px;background:#9DB9A6;border-radius:1px;margin-bottom:7px}
+  .page .sec{height:8px;background:var(--green-soft);border-left:2px solid var(--green);margin:7px 0 6px;border-radius:1px}
+  .page .ql{display:flex;gap:4px;margin-bottom:4px}
+  .page .num{width:7px;height:1.5px;background:#8C9A90;margin-top:1.5px;flex:none}
+  .page .lines{flex:1}
+  .page .l{height:1.6px;background:#D5D9D2;border-radius:1px;margin-bottom:2.6px}
+  .page .l.w1{width:88%}.page .l.w2{width:72%}.page .l.w3{width:94%}.page .l.w4{width:60%}
+  .page .l.a{background:#E4E7E1}
+  .page::after{content:"";position:absolute;left:12px;right:12px;bottom:15px;height:1px;background:#E9E4D8}
+  .pgnum{text-align:center;font-family:var(--mono);font-size:9px;color:var(--ink-3);margin-top:6px;letter-spacing:.08em}
+  .flag{
+    position:absolute;top:7px;right:7px;background:var(--seal);color:#fff;
+    font-size:8.5px;padding:2px 5px;border-radius:4px;font-family:var(--mono);letter-spacing:.02em;
+    box-shadow:0 2px 6px -2px rgba(179,71,47,.5);z-index:2
+  }
+  .note{
+    margin-top:12px;border-left:2px solid var(--seal);background:var(--seal-soft);
+    padding:8px 10px;border-radius:0 7px 7px 0;font-size:10.5px;line-height:1.6;color:#7C3626;
+  }
+  .note b{font-weight:600}
+
+  /* layout guard checklist */
+  .rules{display:flex;flex-direction:column}
+  .rule{display:flex;align-items:center;gap:8px;font-size:10.5px;color:var(--ink-2);padding:6px 0;border-bottom:1px dotted var(--line-soft);letter-spacing:.01em}
+  .rule:last-child{border-bottom:0}
+  .rule .ic{width:15px;height:15px;border-radius:50%;display:grid;place-items:center;font-size:8.5px;flex:none;font-weight:700}
+  .rule.ok .ic{background:var(--green-soft);color:var(--green)}
+  .rule.bad .ic{background:var(--seal-soft);color:var(--seal)}
+  .rule.bad{color:#7C3626}
+
+  /* sheet plan */
+  .sheetplan{border:1px solid var(--line-soft);border-radius:9px;padding:10px 11px 9px;background:#FCFBF8}
+  .sheetrow{display:flex;align-items:center;gap:9px;margin-top:8px}
+  .face{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--ink-2);letter-spacing:.01em}
+  .mini{width:13px;height:18px;border:1px solid #D9D3C5;border-radius:1.5px;background:#fff;display:block;box-shadow:0 1px 1px rgba(29,33,28,.06)}
+  .mini.m2{border-left:2px solid #C9C2B2}
+  .arrow{color:var(--ink-3);font-size:11px}
+  .pill{margin-left:auto;font-family:var(--mono);font-size:9px;color:var(--green);background:var(--green-soft);padding:3px 7px;border-radius:5px;letter-spacing:.04em}
+
+  /* spec strip */
+  .spec{display:flex;gap:0;border:1px solid var(--line-soft);border-radius:9px;overflow:hidden;background:#FCFBF8}
+  .spec div{flex:1;padding:8px 9px;border-right:1px solid var(--line-soft)}
+  .spec div:last-child{border-right:0}
+  .spec dt{font-size:9px;color:var(--ink-3);letter-spacing:.12em;font-family:var(--mono);text-transform:uppercase}
+  .spec dd{font-size:11.5px;color:var(--ink);margin-top:2px;font-weight:500;letter-spacing:.01em}
+
+  /* footer */
+  .foot{padding:14px 20px 16px;border-top:1px solid var(--line-soft);background:#FDFCFA;display:flex;flex-direction:column;gap:9px}
+  .btns{display:flex;gap:9px}
+  .btn{flex:1;height:38px;border-radius:9px;font-size:12.5px;font-weight:600;letter-spacing:.03em;
+    display:flex;align-items:center;justify-content:center;gap:7px;border:1px solid transparent}
+  .btn.primary{background:var(--green);color:#fff;box-shadow:0 6px 14px -7px rgba(31,92,63,.9)}
+  .btn.secondary{background:#fff;border-color:var(--line);color:var(--ink-2)}
+  .btn.disabled{background:#F4F2EC;color:#B3B0A5;border-color:var(--line-soft)}
+  .hint{font-size:10px;color:var(--ink-3);font-family:var(--mono);letter-spacing:.03em;display:flex;justify-content:space-between}
+  .hint b{color:var(--ink-2);font-weight:500}
+
+  /* confirm overlay */
+  .dimmed{filter:saturate(.45);opacity:.42}
+  .scrim{position:absolute;inset:0;background:rgba(29,33,28,.13);z-index:5;display:grid;place-items:center;padding:16px}
+  .modal{
+    width:330px;background:rgba(255,255,255,.94);backdrop-filter:blur(18px) saturate(1.4);
+    border:1px solid rgba(255,255,255,.9);border-radius:14px;
+    box-shadow:0 2px 4px rgba(29,33,28,.10),0 28px 60px -22px rgba(29,33,28,.55);
+    overflow:hidden;
+  }
+  .modal .mh{padding:15px 16px 11px;display:flex;align-items:center;gap:9px;border-bottom:1px solid var(--line-soft)}
+  .modal .mh h3{font-family:var(--serif);font-size:16px;font-weight:600;letter-spacing:.05em}
+  .stamp{
+    margin-left:auto;font-family:var(--serif);font-size:10px;color:var(--seal);
+    border:1px solid var(--seal);border-radius:3px;padding:1px 5px;letter-spacing:.16em;
+    transform:rotate(-4deg);opacity:.85
+  }
+  .mrows{padding:6px 16px 12px}
+  .mrow{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px dashed var(--line-soft);font-size:11.5px}
+  .mrow:last-child{border-bottom:0}
+  .mrow dt{color:var(--ink-3);font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding-top:1px}
+  .mrow dd{color:var(--ink);font-weight:500;text-align:right;letter-spacing:.01em}
+  .mrow dd small{display:block;font-weight:400;color:var(--ink-3);font-size:9.5px;font-family:var(--mono);letter-spacing:.02em;margin-top:1px}
+  .warnbar{margin:0 16px 13px;background:var(--seal-soft);color:#7C3626;font-size:10.5px;padding:7px 9px;border-radius:7px;line-height:1.55}
+  .mfoot{display:flex;gap:8px;padding:0 16px 15px}
+  .mfoot .btn{height:34px;font-size:12px}
+
+  /* footer spec sheet */
+  .sheet-foot{margin-top:40px;border-top:1px solid var(--line);padding-top:20px;display:flex;gap:54px;align-items:flex-start}
+  .fs h4{font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--ink-3);text-transform:uppercase;margin-bottom:11px}
+  .swatches{display:flex;gap:9px}
+  .sw{width:52px}
+  .sw i{display:block;height:34px;border-radius:6px;border:1px solid rgba(29,33,28,.10)}
+  .sw span{display:block;font-family:var(--mono);font-size:8px;color:var(--ink-3);margin-top:5px;letter-spacing:.04em}
+  .type{display:flex;align-items:baseline;gap:12px}
+  .type .t1{font-family:var(--serif);font-size:26px;font-weight:600;letter-spacing:.03em}
+  .type .t2{font-size:13px;font-weight:600}
+  .type .t3{font-size:11px;color:var(--ink-2)}
+  .type .t4{font-family:var(--mono);font-size:9.5px;color:var(--ink-3);letter-spacing:.14em}
+  .states{display:flex;gap:8px;flex-wrap:wrap;max-width:330px}
+  .st{font-size:10px;padding:5px 9px;border-radius:6px;border:1px solid var(--line);color:var(--ink-2);background:#FCFBF8;letter-spacing:.02em}
+  .st.ok{border-color:#BFD5C6;background:var(--green-soft);color:var(--green)}
+  .st.bad{border-color:#E5C2B8;background:var(--seal-soft);color:var(--seal)}
+  .st.mut{color:var(--ink-3);border-style:dashed}
+  .legend{margin-left:auto;text-align:right;font-family:var(--mono);font-size:9px;color:var(--ink-3);line-height:2;letter-spacing:.05em}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <header>
+    <div>
+      <div class="brand"><span class="mark"></span><small>DSH Plugin · dsh-doc</small></div>
+      <h1>讲义工坊<em>LECTURE WORKSHOP</em></h1>
+      <p class="sub">把一段文字变成可打印的讲义：模板负责版式，渲染负责分页，你来确认出纸。</p>
+    </div>
+    <div class="meta">
+      <b>侧边栏面板 · 三态</b>
+      v1.0 / 2026.11.07<br>
+      400 × 812 / A4 预览<br>
+      未安装 · 概念稿
+    </div>
+  </header>
+
+  <div class="row">
+
+    <!-- ① idle -->
+    <section class="board">
+      <div class="cap"><i>1</i><b>待命 · 输入</b><span>IDLE</span></div>
+      <div class="panel">
+        <div class="phead">
+          <div class="t"><h2>讲义工坊</h2><span class="en">studio</span></div>
+          <div class="stat"><span class="dot"></span>HP M232dw</div>
+        </div>
+        <div class="body">
+          <div>
+            <div class="lab"><span>模板 template</span><b>v3 · 内置</b></div>
+            <div class="chips">
+              <div class="chip on">通用讲义</div>
+              <div class="chip ghost">+ 新模板</div>
+            </div>
+          </div>
+          <div>
+            <div class="lab"><span>内容 markdown</span><b>1,284 字</b></div>
+            <div class="editor">
+              <div style="color:var(--ink-3)"># PET（B1）口语回答</div>
+              <div class="h">## Part 1 · 常考问题</div>
+              <div class="q">**1. What subject do you find the easiest?**</div>
+              <div class="a">A：I think Art is the easiest subject for me.</div>
+              <div class="a">B：For me, PE is the easiest.</div>
+              <div class="q">**2. What kind of music do you listen to?**</div>
+              <div class="a">A：I mostly listen to pop music.<span class="caret"></span></div>
+              <div class="fade"></div>
+            </div>
+          </div>
+          <div class="preview">
+            <div class="lab"><span>预览 preview</span><b>尚未渲染</b></div>
+            <div class="empty">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#8C9187" stroke-width="1.2">
+                <rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>
+              </svg>
+              <div class="e1">渲染后在此查看分页</div>
+              <div class="e2">A4 · 双面 · 灰度</div>
+            </div>
+          </div>
+        </div>
+        <div class="foot">
+          <div class="btns">
+            <div class="btn primary">渲染预览</div>
+            <div class="btn disabled">打印</div>
+          </div>
+          <div class="hint"><span>上次渲染 <b>—</b></span><span>⌘↵</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ② rendered -->
+    <section class="board">
+      <div class="cap"><i>2</i><b>已渲染 · 校验</b><span>READY</span></div>
+      <div class="panel">
+        <div class="phead">
+          <div class="t"><h2>讲义工坊</h2><span class="en">studio</span></div>
+          <div class="stat"><span class="dot"></span>2 页 · A4</div>
+        </div>
+        <div class="body" style="gap:12px">
+          <div class="lab"><span>模板 template</span><b>v3 · 内置</b></div>
+          <div class="preview" style="gap:0">
+            <div class="lab"><span>预览 preview</span><b>2 / 2 页 · A4</b></div>
+            <div class="pages" style="gap:16px">
+              <div class="pg">
+                <div class="page lg">
+                  <div class="band"></div><div class="band2"></div>
+                  <div class="sec"></div>
+                  <div class="ql"><i class="num"></i><div class="lines"><div class="l w3"></div><div class="l w1 a"></div><div class="l w2 a"></div></div></div>
+                  <div class="ql"><i class="num"></i><div class="lines"><div class="l w1"></div><div class="l w3 a"></div><div class="l w2 a"></div></div></div>
+                  <div class="ql"><i class="num"></i><div class="lines"><div class="l w2"></div><div class="l w3 a"></div><div class="l w4 a"></div></div></div>
+                  <div class="ql"><i class="num"></i><div class="lines"><div class="l w3"></div><div class="l w1 a"></div><div class="l w3 a"></div></div></div>
+                  <div class="ql"><i class="num"></i><div class="lines"><div class="l w1"></div><div class="l w2 a"></div><div class="l w3 a"></div></div></div>
+                  <div class="ql"><i class="num"></i><div class="lines"><div class="l w2"></div><div class="l w4 a"></div><div class="l w1 a"></div></div></div>
+                  <div class="ql"><i class="num"></i><div class="lines"><div class="l w3"></div><div class="l w2 a"></div><div class="l w3 a"></div></div></div>
+                </div>
+                <div class="pgnum">1</div>
+              </div>
+              <div class="pg">
+                <span class="flag">⚠ 分页告警</span>
+                <div class="page lg">
+                  <div class="ql"><i class="num"></i><div class="lines"><div class="l w2"></div><div class="l w1 a"></div><div class="l w3 a"></div><div class="l w2 a"></div></div></div>
+                  <div class="sec" style="margin-top:14px"></div>
+                  <div class="ql"><i class="num"></i><div class="lines"><div class="l w1"></div><div class="l w2 a"></div><div class="l w3 a"></div></div></div>
+                  <div class="ql"><i class="num"></i><div class="lines"><div class="l w3"></div><div class="l w1 a"></div><div class="l w4 a"></div></div></div>
+                  <div class="ql"><i class="num"></i><div class="lines"><div class="l w2"></div><div class="l w3 a"></div><div class="l w1 a"></div></div></div>
+                  <div class="ql"><i class="num"></i><div class="lines"><div class="l w1"></div><div class="l w3 a"></div><div class="l w2 a"></div></div></div>
+                </div>
+                <div class="pgnum">2</div>
+              </div>
+            </div>
+            <div class="note"><b>第 2 页开头只剩 B 答法。</b>题 8 的问答被拆开，建议对该题启用 keep-together 后重新渲染。</div>
+            <div class="rules">
+              <div class="lab" style="margin-top:14px"><span>分页校验 guards</span><b>3 条 · 2 通过</b></div>
+              <div class="rule ok"><span class="ic">✓</span><span>题目与 A/B 答法不跨页（keep-together）</span></div>
+              <div class="rule bad"><span class="ic">!</span><span>第 8 题：题面在第 1 页，B 答法在第 2 页</span></div>
+              <div class="rule ok"><span class="ic">✓</span><span>页脚页码连续 · 1 / 2</span></div>
+            </div>
+          </div>
+          <div class="sheetplan">
+            <div class="lab" style="margin-bottom:0"><span>纸张分摊 sheet</span><b>1 张纸 · 双面</b></div>
+            <div class="sheetrow">
+              <div class="face"><i class="mini"></i><span>正面 · 第 1 页</span></div>
+              <div class="arrow">·</div>
+              <div class="face"><i class="mini m2"></i><span>背面 · 第 2 页</span></div>
+              <div class="pill">长边翻页</div>
+            </div>
+          </div>
+        </div>
+        <div class="foot">
+          <div class="spec" style="background:#fff">
+            <div><dt>纸张</dt><dd>A4</dd></div>
+            <div><dt>页数</dt><dd>2 页</dd></div>
+            <div><dt>双面</dt><dd>长边</dd></div>
+            <div><dt>用纸</dt><dd>1 张</dd></div>
+          </div>
+          <div class="btns">
+            <div class="btn secondary">重新渲染</div>
+            <div class="btn primary">打印 2 页</div>
+          </div>
+          <div class="hint" style="padding:0 1px"><span>模板 <b>v3</b> · 已通过分页校验</span><span>⌘P</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ③ confirm -->
+    <section class="board">
+      <div class="cap"><i>3</i><b>打印确认</b><span>CONFIRM</span></div>
+      <div class="panel">
+        <div class="phead">
+          <div class="t"><h2>讲义工坊</h2><span class="en">studio</span></div>
+          <div class="stat"><span class="dot"></span>2 页 · A4</div>
+        </div>
+        <div class="body dimmed" style="gap:14px">
+          <div class="lab"><span>模板 template</span><b>v3 · 内置</b></div>
+          <div class="pages">
+            <div class="pg">
+              <div class="page">
+                <div class="band"></div><div class="band2"></div><div class="sec"></div>
+                <div class="ql"><i class="num"></i><div class="lines"><div class="l w3"></div><div class="l w1 a"></div></div></div>
+                <div class="ql"><i class="num"></i><div class="lines"><div class="l w1"></div><div class="l w3 a"></div></div></div>
+                <div class="ql"><i class="num"></i><div class="lines"><div class="l w2"></div><div class="l w3 a"></div></div></div>
+                <div class="ql"><i class="num"></i><div class="lines"><div class="l w3"></div><div class="l w1 a"></div></div></div>
+                <div class="ql"><i class="num"></i><div class="lines"><div class="l w1"></div><div class="l w2 a"></div></div></div>
+                <div class="ql"><i class="num"></i><div class="lines"><div class="l w2"></div><div class="l w4 a"></div></div></div>
+              </div><div class="pgnum">1</div>
+            </div>
+            <div class="pg">
+              <div class="page">
+                <div class="ql"><i class="num"></i><div class="lines"><div class="l w2"></div><div class="l w1 a"></div><div class="l w3 a"></div></div></div>
+                <div class="sec" style="margin-top:12px"></div>
+                <div class="ql"><i class="num"></i><div class="lines"><div class="l w1"></div><div class="l w2 a"></div></div></div>
+                <div class="ql"><i class="num"></i><div class="lines"><div class="l w3"></div><div class="l w1 a"></div></div></div>
+              </div><div class="pgnum">2</div>
+            </div>
+          </div>
+          <div class="spec">
+            <div><dt>纸张</dt><dd>A4</dd></div>
+            <div><dt>页数</dt><dd>2 页</dd></div>
+            <div><dt>双面</dt><dd>长边</dd></div>
+            <div><dt>用纸</dt><dd>1 张</dd></div>
+          </div>
+        </div>
+        <div class="foot" style="opacity:.45">
+          <div class="btns">
+            <div class="btn secondary">重新渲染</div>
+            <div class="btn primary">打印 2 页</div>
+          </div>
+        </div>
+
+        <div class="scrim">
+          <div class="modal">
+            <div class="mh">
+              <h3>确认打印</h3>
+              <span class="stamp">校</span>
+            </div>
+            <div class="mrows">
+              <div class="mrow"><dt>printer</dt><dd>HP LaserJet M232dw<small>ipp://NPI6FACF2.local</small></dd></div>
+              <div class="mrow"><dt>paper</dt><dd>A4 · 灰度</dd></div>
+              <div class="mrow"><dt>pages</dt><dd>2 页 → 1 张纸</dd></div>
+              <div class="mrow"><dt>duplex</dt><dd>双面 · 长边翻页</dd></div>
+            </div>
+            <div class="warnbar">出纸后无法撤回。请确认没有选错文档。</div>
+            <div class="mfoot">
+              <div class="btn secondary">取消</div>
+              <div class="btn primary">正式打印</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- spec sheet -->
+  <div class="sheet-foot">
+    <div class="fs">
+      <h4>Palette</h4>
+      <div class="swatches">
+        <div class="sw"><i style="background:#1F5C3F"></i><span>#1F5C3F</span></div>
+        <div class="sw"><i style="background:#E9F0EA"></i><span>#E9F0EA</span></div>
+        <div class="sw"><i style="background:#B3472F"></i><span>#B3472F</span></div>
+        <div class="sw"><i style="background:#F2EEE5"></i><span>#F2EEE5</span></div>
+        <div class="sw"><i style="background:#1D211C"></i><span>#1D211C</span></div>
+      </div>
+    </div>
+    <div class="fs">
+      <h4>Type</h4>
+      <div class="type">
+        <span class="t1">讲义工坊</span>
+        <span class="t2">渲染预览</span>
+        <span class="t3">正文 12.5 / 行高 1.7</span>
+        <span class="t4">MONO 9–10.5</span>
+      </div>
+    </div>
+    <div class="fs">
+      <h4>States</h4>
+      <div class="states">
+        <span class="st mut">idle 未渲染</span>
+        <span class="st">rendering 渲染中</span>
+        <span class="st ok">ready 已校验</span>
+        <span class="st bad">warn 分页告警</span>
+        <span class="st">confirm 待确认</span>
+        <span class="st ok">done 已出纸</span>
+      </div>
+    </div>
+    <div class="legend">
+      A4 · 210×297mm<br>
+      400×812 panel<br>
+      8pt grid
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
