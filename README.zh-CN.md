@@ -6,6 +6,10 @@
 
 ![Workspace](design/workspace-mockup.png)
 
+### 配置
+
+![字体与模板](design/redesign/specimens/v3-vertical.png)
+
 ## 它在解决什么
 
 手工做一份讲义通常要三步：排版成 Word/PDF、确认分页没有把题目和答案拆开、最后打出来。第三步看着最简单，实际上最容易踩坑——每台打印机的双面选项叫法不同（PPD 驱动是 `Duplex=DuplexNoTumble`，IPP Everywhere 是 `sides=two-sided-long-edge`），而且「任务已提交」并不等于「纸出来了」。
