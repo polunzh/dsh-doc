@@ -4,6 +4,8 @@
 
 Typeset text into a print-ready A4 PDF and print it duplex on a LAN printer with capability-aware options.
 
+![Workspace](design/workspace-mockup.png)
+
 ## What It Solves
 
 Printing handouts manually involves three steps: typesetting (Word/PDF), checking pagination (to ensure questions/answers aren't split), and printing. The printing step is notoriously fragile—duplex naming conventions vary (e.g., `DuplexNoTumble` vs `two-sided-long-edge`), and "task submitted" does not guarantee physical output.
