@@ -4,11 +4,7 @@
 
 Typeset text into a print-ready A4 PDF and print it duplex on a LAN printer with capability-aware options.
 
-![Workspace](design/workspace-mockup.png)
-
-### Configuration
-
-![Typography & Templates](design/redesign/specimens/v3-vertical.png)
+![Workspace](design/workspace.png)
 
 ## What It Solves
 
