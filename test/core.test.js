@@ -25,6 +25,7 @@ import {
   renderMarkdown,
   requestAdmission,
   resolveDocumentTitle,
+  sanitizeBodyHtml,
   resolveJobState,
   resolveTemplate,
   routeOf,
@@ -289,6 +290,35 @@ test("resolveDocumentTitle：显式标题优先，未指定时留空，不再用
   );
   assert.equal(resolveDocumentTitle({ bodyHtml: "<p>正文</p>", templateTitle: "通用讲义" }), "");
   assert.equal(resolveDocumentTitle({ bodyHtml: "", templateTitle: "" }), "");
+});
+
+test("sanitizeBodyHtml：只留排版标签，脚本与事件全部丢掉", () => {
+  const html =
+    '<p style="text-align:center">居中</p>' +
+    '<p align="right">右对齐</p>' +
+    '<script>alert(1)</script>' +
+    '<p onclick="steal()">带事件</p>' +
+    '<img src="x" onerror="alert(1)">' +
+    '<a href="javascript:alert(1)">链接</a>' +
+    "<b>粗</b><u>下划线</u>";
+  const out = sanitizeBodyHtml(html);
+
+  assert.match(out, /<p style="text-align:center">居中<\/p>/);
+  assert.match(out, /<p style="text-align:right">右对齐<\/p>/, "align 属性被转成 text-align");
+  assert.doesNotMatch(out, /script/i);
+  assert.doesNotMatch(out, /onclick/i);
+  assert.doesNotMatch(out, /onerror/i);
+  assert.doesNotMatch(out, /javascript:/i);
+  assert.doesNotMatch(out, /<img/i, "图片不白名单");
+  assert.match(out, /<b>粗<\/b>/);
+  assert.match(out, /<u>下划线<\/u>/);
+});
+
+test("sanitizeBodyHtml：空输入与非字符串安全回空", () => {
+  assert.equal(sanitizeBodyHtml(""), "");
+  assert.equal(sanitizeBodyHtml(null), "");
+  assert.equal(sanitizeBodyHtml(undefined), "");
+  assert.equal(sanitizeBodyHtml("<p>纯文本</p>"), "<p>纯文本</p>");
 });
 
 test("printStyles / wrapPrintHtml：A4 与防撕裂规则都在", () => {

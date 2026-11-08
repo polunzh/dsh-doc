@@ -48,9 +48,9 @@ Requires Chrome or Chromium on the same machine. Preview thumbnails use `pdftopp
 ## Use
 
 1. Click the Print Studio icon in the sidebar to open the panel.
-2. Pick a template, paste content into the editor.
-3. `⌘↵` or "Render" — the right side shows page thumbnails and the layout guards.
-4. "Print N pages" → confirm card → print.
+2. Compose directly on the Word-style A4 sheet with WYSIWYG formatting.
+3. The top ribbon controls block formatting (Headings/Body/Quote), text styles (Bold/Italic/Underline/Strikethrough), alignments, lists, fonts, font size, leading, margin, and columns.
+4. Click "Print preview" to review full-size A4 pagination and layout guards; or click "Print" — it renders fresh, opens review, and prints with one click after verification.
 5. The status bar reports the job: processing → completed · N pages / M sheets.
 
 The typing control strip stays open above the editor. Any change re-renders the preview after 250 ms:

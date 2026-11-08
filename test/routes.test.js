@@ -374,6 +374,55 @@ test("POST /render：真能渲染出 PDF；纯诗不带模板标题", async (t) 
   }
 });
 
+test("POST /render：富文本 HTML 直通，居中排版原样进 PDF", async (t) => {
+  const app = await boot();
+  try {
+    const html =
+      '<p style="text-align:center"><b>居中标题</b></p>' +
+      '<p style="text-align:center">第一行正文</p>' +
+      '<p style="text-align:center">第二行正文</p>';
+    const res = await call(app.handler, "POST", "/dsh-doc/api/render", {
+      markdown: "居中标题\n第一行正文\n第二行正文",
+      html,
+      template: "generic",
+    });
+
+    if (res.payload?.error && /Chrome/i.test(String(res.payload.error))) {
+      t.skip("本机没有可用的 Chrome");
+      return;
+    }
+
+    assert.equal(res.statusCode, 200, JSON.stringify(res.payload));
+    assert.ok(res.payload.pages >= 1, "至少一页");
+    assert.ok(res.payload.previews.length >= 1, "应该带预览图");
+    assert.equal(res.payload.title, "", "未给显式标题时不补模板名");
+
+    // 交给 Chrome 的 HTML 必须带着编辑器里的对齐，否则打印出来会跑版
+    const htmlPath = join(app.home, "storages", "dsh-doc", "work", `${res.payload.id}.html`);
+    assert.equal(existsSync(htmlPath), true, "渲染中间文件应存在");
+    const printed = readFileSync(htmlPath, "utf8");
+    assert.match(printed, /text-align:center/, "居中排版要进打印 HTML");
+    assert.doesNotMatch(printed, /<script/i, "不应带脚本");
+  } finally {
+    app.cleanup();
+  }
+});
+
+test("POST /draft：富文本 HTML 与 markdown 一起落盘", async () => {
+  const app = await boot();
+  try {
+    const html = '<p style="text-align:center">居中草稿</p>';
+    const saved = await call(app.handler, "POST", "/dsh-doc/api/draft", { markdown: "居中草稿", html });
+    assert.equal(saved.statusCode, 200, JSON.stringify(saved.payload));
+
+    const status = await call(app.handler, "GET", "/dsh-doc/api/status");
+    assert.equal(status.payload.draft.markdown, "居中草稿");
+    assert.equal(status.payload.draft.html, html, "草稿要存富文本，重开才能保留对齐");
+  } finally {
+    app.cleanup();
+  }
+});
+
 test("未知路由返回 404，越权请求返回 401", async () => {
   const app = await boot();
   try {
