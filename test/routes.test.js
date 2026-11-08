@@ -322,6 +322,7 @@ test("POST /render：越界的 style 被夹到合法范围", async (t) => {
       return;
     }
     assert.equal(res.statusCode, 200);
+    assert.equal(res.payload.title, "", "未指定显式标题时不应补模板名称");
     assert.ok(res.payload.pages >= 1, "越界值不应导致渲染失败");
   } finally {
     app.cleanup();

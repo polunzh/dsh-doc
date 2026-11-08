@@ -279,7 +279,7 @@ test("renderMarkdown：分隔线渲染成 hr", () => {
   assert.match(html, /<hr>/);
 });
 
-test("resolveDocumentTitle：显式标题优先，纯诗留空，其余用模板标题", () => {
+test("resolveDocumentTitle：显式标题优先，未指定时留空，不再用模板标题兜底", () => {
   const poemBody =
     '<div class="poem poem--classic"><div class="poem-title">静夜思</div><div class="poem-body"><span class="pl">床前明月光</span></div></div>';
   assert.equal(resolveDocumentTitle({ bodyHtml: poemBody, templateTitle: "通用讲义" }), "");
@@ -287,7 +287,7 @@ test("resolveDocumentTitle：显式标题优先，纯诗留空，其余用模板
     resolveDocumentTitle({ explicitTitle: "我的讲义", bodyHtml: poemBody, templateTitle: "通用讲义" }),
     "我的讲义",
   );
-  assert.equal(resolveDocumentTitle({ bodyHtml: "<p>正文</p>", templateTitle: "通用讲义" }), "通用讲义");
+  assert.equal(resolveDocumentTitle({ bodyHtml: "<p>正文</p>", templateTitle: "通用讲义" }), "");
   assert.equal(resolveDocumentTitle({ bodyHtml: "", templateTitle: "" }), "");
 });
 
