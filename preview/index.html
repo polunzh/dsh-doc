@@ -223,14 +223,16 @@
         const mainSlot = document.getElementById("main-slot");
         ReactDOM.render(React.createElement(MainComponent), mainSlot);
 
-        // Auto trigger initial render after 350ms
+        // 打开一次打印预览，让截图里有真实样张
         setTimeout(() => {
-          const renderBtn = Array.from(document.querySelectorAll("button")).find(b => b.innerText.includes("渲染") || b.innerText.includes("Render"));
+          const renderBtn = Array.from(document.querySelectorAll("button")).find(
+            (b) => b.innerText.includes("打印预览") || b.innerText.includes("Print preview"),
+          );
           if (renderBtn) renderBtn.click();
           setTimeout(() => {
             window.__previewReady = true;
-          }, 700);
-        }, 400);
+          }, 900);
+        }, 500);
       })();
     </script>
   </body>
