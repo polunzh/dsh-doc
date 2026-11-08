@@ -89,6 +89,7 @@
     <script>
       const params = new URLSearchParams(location.search);
       const curLocale = params.get("locale") === "en" ? "en" : "zh";
+      const showModal = params.get("modal") === "1";
 
       // Override navigator.language
       Object.defineProperty(navigator, "language", {
@@ -114,6 +115,14 @@
     <script>
       (async () => {
         const mockData = await fetch("/preview/mock-preview.json").then(r => r.json());
+
+        // Convert plain poem to rich HTML paragraphs with title & author
+        const poemLines = mockData.poem.split("\n");
+        const poemHtml = `
+          <h1 style="text-align: center; margin-bottom: 4px;">${poemLines[0]}</h1>
+          <p style="text-align: center; color: #666; font-size: 0.9em; margin-bottom: 24px;">${poemLines[1]}</p>
+          ${poemLines.slice(2).map(l => `<p style="text-align: center; margin: 4px 0;">${l}</p>`).join("")}
+        `;
 
         // 2. Fetch mock interceptor
         const origFetch = window.fetch;
@@ -145,7 +154,7 @@
                 builtIn: true
               }],
               systemFonts: ["LXGW WenKai", "Songti SC", "Kaiti SC", "PingFang SC", "Helvetica Neue", "Arial"],
-              draft: { markdown: mockData.poem }
+              draft: { markdown: mockData.poem, html: poemHtml }
             }), { headers: { "content-type": "application/json" } });
           }
 
@@ -223,15 +232,17 @@
         const mainSlot = document.getElementById("main-slot");
         ReactDOM.render(React.createElement(MainComponent), mainSlot);
 
-        // 打开一次打印预览，让截图里有真实样张
+        // 如果要求弹窗，则点击打印预览；否则停留在主编辑桌上
         setTimeout(() => {
-          const renderBtn = Array.from(document.querySelectorAll("button")).find(
-            (b) => b.innerText.includes("打印预览") || b.innerText.includes("Print preview"),
-          );
-          if (renderBtn) renderBtn.click();
+          if (showModal) {
+            const renderBtn = Array.from(document.querySelectorAll("button")).find(
+              (b) => b.innerText.includes("打印预览") || b.innerText.includes("Print preview"),
+            );
+            if (renderBtn) renderBtn.click();
+          }
           setTimeout(() => {
             window.__previewReady = true;
-          }, 900);
+          }, showModal ? 900 : 500);
         }, 500);
       })();
     </script>
