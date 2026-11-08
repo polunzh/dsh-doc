@@ -35,7 +35,15 @@ async function boot() {
   };
   mod.apply(ctx, {});
   assert.equal(routes.length, 1, "应该只注册一条前缀路由");
-  return { handler: routes[0].handler, home, cleanup: () => rmSync(home, { recursive: true, force: true }) };
+  return {
+    handler: routes[0].handler,
+    home,
+    cleanup: () => {
+      try {
+        rmSync(home, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
+      } catch {}
+    },
+  };
 }
 
 function makeRequest({ method = "GET", url, body }) {
