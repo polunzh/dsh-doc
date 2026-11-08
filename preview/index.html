@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="zh-CN" data-dsh-style="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>打印工坊 · Preview</title>
+    <script src="/preview/vendor/react.production.min.js"></script>
+    <script src="/preview/vendor/react-dom.production.min.js"></script>
+    <style>
+      :root {
+        color-scheme: light;
+        --dsw-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+        --dsw-font-family-code: "SF Mono", Menlo, Monaco, Consolas, monospace;
+        --dsw-radius-xs: 4px;
+        --dsw-radius-sm: 8px;
+        --dsw-radius-md: 12px;
+        --dsw-radius-lg: 16px;
+        --dsw-alias-bg-base: #f7f8f9;
+        --dsw-alias-bg-layer-1: #ffffff;
+        --dsw-alias-bg-layer-2: #fafbfc;
+        --dsw-alias-bg-layer-3: #ffffff;
+        --dsw-alias-label-primary: #111418;
+        --dsw-alias-label-secondary: #57606a;
+        --dsw-alias-label-tertiary: #8c959f;
+        --dsw-alias-border-l1: rgba(0, 0, 0, 0.08);
+        --dsw-alias-border-l2: rgba(0, 0, 0, 0.14);
+        --dsw-alias-interactive-bg-hover: rgba(0, 0, 0, 0.04);
+        --dsw-alias-interactive-bg-active: rgba(0, 0, 0, 0.08);
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        background: #ebedf0;
+        font-family: var(--dsw-font-family);
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #app-root {
+        width: 1440px;
+        height: 900px;
+        background: #f7f8f9;
+        display: flex;
+        overflow: hidden;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+      }
+      .mock-sidebar {
+        width: 60px;
+        background: #24292f;
+        flex: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 14px;
+        gap: 16px;
+      }
+      .mock-sidebar-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        cursor: pointer;
+      }
+      .mock-sidebar-icon.active {
+        background: #1F5C3F;
+      }
+      .mock-main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app-root">
+      <aside class="mock-sidebar">
+        <div class="mock-sidebar-icon" id="sidebar-slot"></div>
+      </aside>
+      <main class="mock-main" id="main-slot"></main>
+    </div>
+
+    <script>
+      const params = new URLSearchParams(location.search);
+      const curLocale = params.get("locale") === "en" ? "en" : "zh";
+
+      // Override navigator.language
+      Object.defineProperty(navigator, "language", {
+        get: () => curLocale === "en" ? "en-US" : "zh-CN"
+      });
+      Object.defineProperty(navigator, "languages", {
+        get: () => curLocale === "en" ? ["en-US", "en"] : ["zh-CN", "zh"]
+      });
+
+      // 1. Mock ModuleLoader
+      let pluginExport = null;
+      window.__ModuleLoader__ = {
+        load(mod) {
+          pluginExport = mod.factory((name) => {
+            if (name === "react") return window.React;
+            if (name === "react-dom") return window.ReactDOM;
+            throw new Error("Unknown module: " + name);
+          });
+        }
+      };
+    </script>
+    <script src="/lib/client.js"></script>
+    <script>
+      (async () => {
+        const mockData = await fetch("/preview/mock-preview.json").then(r => r.json());
+
+        // 2. Fetch mock interceptor
+        const origFetch = window.fetch;
+        window.fetch = async (url, opts) => {
+          if (url.includes("/dsh-doc/api/status")) {
+            return new Response(JSON.stringify({
+              ok: true,
+              chrome: "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+              defaultQueue: "HP_LaserJet_MFP_M232dw",
+              printers: [{
+                queue: "HP_LaserJet_MFP_M232dw",
+                state: "idle",
+                capabilities: {
+                  duplex: ["none", "two-sided-long-edge", "two-sided-short-edge"],
+                  media: ["A4", "Letter"],
+                  color: ["gray"]
+                }
+              }],
+              templates: [{
+                id: "generic",
+                title: curLocale === "en" ? "Generic Handout" : "通用讲义",
+                subtitle: "",
+                accent: "#1F5C3F",
+                font: "wenkai",
+                fontSize: 10.5,
+                lineHeight: 1.55,
+                margin: 18,
+                columns: 1,
+                builtIn: true
+              }],
+              systemFonts: ["LXGW WenKai", "Songti SC", "Kaiti SC", "PingFang SC", "Helvetica Neue", "Arial"],
+              draft: { markdown: mockData.poem }
+            }), { headers: { "content-type": "application/json" } });
+          }
+
+          if (url.includes("/dsh-doc/api/render")) {
+            return new Response(JSON.stringify({
+              ok: true,
+              id: "preview-render-id",
+              pages: 1,
+              sheets: 1,
+              title: "春江花月夜",
+              previews: [{ page: 1, dataUrl: mockData.pageDataUrl }],
+              pageNumbers: true,
+              guards: [
+                { level: "ok", code: "guard.paperOk", params: {} },
+                { level: "warn", code: "guard.duplexOdd", params: { pages: 1, sheets: 1 } },
+                { level: "ok", code: "guard.keepTogether", params: {} },
+                { level: "ok", code: "guard.pageNumbers", params: { pages: 1 } }
+              ],
+              guardCodes: ["guard.paperOk", "guard.duplexOdd", "guard.keepTogether", "guard.pageNumbers"]
+            }), { headers: { "content-type": "application/json" } });
+          }
+
+          if (url.includes("/dsh-doc/api/draft")) {
+            return new Response(JSON.stringify({ ok: true }), { headers: { "content-type": "application/json" } });
+          }
+
+          return origFetch(url, opts);
+        };
+
+        // 3. Mock Cordis Context
+        const registeredSlots = {};
+        const registeredDicts = {};
+        const ctx = {
+          effect(fn) {
+            const cleanup = fn();
+            return cleanup || (() => {});
+          },
+          locale: {
+            register(ns, dicts) {
+              Object.assign(registeredDicts, dicts);
+            },
+            bind(ns) {
+              return (key, params) => {
+                const dict = registeredDicts[curLocale] || registeredDicts["zh"] || {};
+                let text = dict[key] || key;
+                if (params && typeof params === "object") {
+                  for (const [k, v] of Object.entries(params)) {
+                    text = text.replace(new RegExp(`\\{${k}\\}`, "g"), String(v));
+                  }
+                }
+                return text;
+              };
+            }
+          },
+          slots: {
+            inject(name, handler) {
+              handler();
+            },
+            register(meta, comp) {
+              registeredSlots[meta.name] = comp;
+            }
+          }
+        };
+
+        // 4. Mount Plugin
+        pluginExport.apply(ctx);
+
+        const IconComponent = registeredSlots["sidebar.panellist"];
+        const MainComponent = registeredSlots["main"];
+
+        const sidebarSlot = document.getElementById("sidebar-slot");
+        sidebarSlot.className = "mock-sidebar-icon active";
+        ReactDOM.render(React.createElement(IconComponent), sidebarSlot);
+
+        const mainSlot = document.getElementById("main-slot");
+        ReactDOM.render(React.createElement(MainComponent), mainSlot);
+
+        // Auto trigger initial render after 350ms
+        setTimeout(() => {
+          const renderBtn = Array.from(document.querySelectorAll("button")).find(b => b.innerText.includes("渲染") || b.innerText.includes("Render"));
+          if (renderBtn) renderBtn.click();
+          setTimeout(() => {
+            window.__previewReady = true;
+          }, 700);
+        }, 400);
+      })();
+    </script>
+  </body>
+</html>

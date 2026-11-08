@@ -160,8 +160,8 @@ test("parseLpJobId：从 lp 回执里取任务 id", () => {
 });
 
 test("resolveJobState：先看活动队列，再看已完成", () => {
-  assert.equal(resolveJobState({ active: "HP-7 zhenqiang 1", completed: "", jobId: "HP-7" }), "processing");
-  assert.equal(resolveJobState({ active: "", completed: "HP-7 zhenqiang ...", jobId: "HP-7" }), "completed");
+  assert.equal(resolveJobState({ active: "HP-7 user 1", completed: "", jobId: "HP-7" }), "processing");
+  assert.equal(resolveJobState({ active: "", completed: "HP-7 user ...", jobId: "HP-7" }), "completed");
   assert.equal(resolveJobState({ active: "", completed: "", jobId: "HP-7" }), "unknown");
   assert.equal(resolveJobState({ active: "", completed: "", jobId: "" }), "unknown");
 });
