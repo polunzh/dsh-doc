@@ -1,8 +1,10 @@
 {
   "name": "@polunzh/dsh-doc",
   "version": "0.1.0",
-  "private": true,
   "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "打印工坊：把文本/Markdown 排成 A4 讲义 PDF，探测局域网打印机能力后直接双面打印，并回报出纸回执。Print Studio: typeset text into a print-ready A4 PDF and print it duplex on a LAN printer with capability-aware options.",
   "main": "./lib/index.js",
   "exports": {
