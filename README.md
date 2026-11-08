@@ -4,7 +4,7 @@
 
 Typeset text into a print-ready A4 PDF and print it duplex on a LAN printer with capability-aware options.
 
-![Workspace](design/workspace.png)
+![Workspace](design/workspace-en.png)
 
 ## What It Solves
 

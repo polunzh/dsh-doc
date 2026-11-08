@@ -4,7 +4,7 @@
 
 把一段文字排成讲义，并直接打印到局域网打印机：模板负责版式，渲染负责分页，你确认后出纸。
 
-![工作台](design/workspace.png)
+![工作台](design/workspace-zh.png)
 
 ## 它在解决什么
 
