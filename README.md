@@ -4,6 +4,7 @@
 
 [![npm](https://img.shields.io/npm/v/@polunzh/dsh-doc)](https://www.npmjs.com/package/@polunzh/dsh-doc)
 [![Open Plugin Market](https://img.shields.io/endpoint?url=https%3A%2F%2Fdshopen.org%2Fbadge%2F%2540polunzh%2Fdsh-doc.json)](https://dshopen.org/zh/plugins/@polunzh/dsh-doc/)
+[![DSH Plugin Index](https://dsh.127.dev/assets/badge-en.svg)](https://dsh.127.dev/)
 [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 A Word-like desktop for typesetting and duplex printing handouts on local network printers directly from DeepSeek Harness.

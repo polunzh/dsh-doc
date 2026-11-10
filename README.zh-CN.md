@@ -4,6 +4,7 @@
 
 [![npm](https://img.shields.io/npm/v/@polunzh/dsh-doc)](https://www.npmjs.com/package/@polunzh/dsh-doc)
 [![开放插件市场](https://img.shields.io/endpoint?url=https%3A%2F%2Fdshopen.org%2Fbadge%2F%2540polunzh%2Fdsh-doc.json)](https://dshopen.org/zh/plugins/@polunzh/dsh-doc/)
+[![DSH 插件索引](https://dsh.127.dev/assets/badge-zh.svg)](https://dsh.127.dev/)
 [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 在 DeepSeek Harness 里用 Word 式 A4 纸面排版，并把讲义直接双面打印到局域网打印机。
