@@ -26,6 +26,7 @@ import {
   requestAdmission,
   resolveDocumentTitle,
   sanitizeBodyHtml,
+  sanitizeInlineStyle,
   resolveJobState,
   resolveTemplate,
   routeOf,
@@ -319,6 +320,36 @@ test("sanitizeBodyHtml：空输入与非字符串安全回空", () => {
   assert.equal(sanitizeBodyHtml(null), "");
   assert.equal(sanitizeBodyHtml(undefined), "");
   assert.equal(sanitizeBodyHtml("<p>纯文本</p>"), "<p>纯文本</p>");
+});
+
+test("sanitizeInlineStyle：只保留字符格式白名单，危险取值丢弃", () => {
+  assert.equal(
+    sanitizeInlineStyle("font-size:14pt; color:#C0392B; background-color: rgb(255, 235, 59)"),
+    "font-size:14pt;color:#c0392b;background-color:rgb(255, 235, 59)",
+  );
+  assert.equal(sanitizeInlineStyle("font-family: 'Songti SC', serif"), "font-family:Songti SC, serif");
+  assert.equal(sanitizeInlineStyle("font-weight:700; font-style:italic; text-decoration:underline"),
+    "font-weight:700;font-style:italic;text-decoration:underline");
+  // 危险 / 非法取值全部丢掉
+  assert.equal(sanitizeInlineStyle("background-image:url(javascript:alert(1))"), "");
+  assert.equal(sanitizeInlineStyle("color:expression(alert(1))"), "");
+  assert.equal(sanitizeInlineStyle("font-size:9999pt"), "");
+  assert.equal(sanitizeInlineStyle("position:fixed;width:100%"), "");
+  assert.equal(sanitizeInlineStyle("font-family: Arial; background: url(x)"), "font-family:Arial");
+  assert.equal(sanitizeInlineStyle(""), "");
+});
+
+test("sanitizeBodyHtml：保留校验过的字符级样式，丢弃事件与未知属性", () => {
+  const html =
+    '<p>正文<span data-ddoc-fmt style="font-size:16pt;color:#112233;background-color:#ffe95c" onclick="x()">强调</span></p>' +
+    '<p style="font-family:PingFang SC">段落字体</p>' +
+    '<span style="font-size:12pt;background-image:url(x);position:absolute">坏样式</span>';
+  const out = sanitizeBodyHtml(html);
+  assert.match(out, /<span style="font-size:16pt;color:#112233;background-color:#ffe95c">强调<\/span>/);
+  assert.doesNotMatch(out, /onclick/i);
+  assert.doesNotMatch(out, /data-ddoc-fmt/);
+  assert.match(out, /<p style="font-family:PingFang SC">段落字体<\/p>/);
+  assert.doesNotMatch(out, /background-image|position:absolute/i, "非白名单样式必须丢掉");
 });
 
 test("printStyles / wrapPrintHtml：A4 与防撕裂规则都在", () => {
