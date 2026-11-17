@@ -170,16 +170,24 @@ async function main() {
       return res;
     };
     const setSelect = async (sel, value) => {
+      // 先 focus 模拟真实点击下拉：验证焦点转移不会让控件变 disabled 或丢失选区
+      const focusRes = await evalJson(`(() => {
+        const el=document.querySelector(${JSON.stringify(sel)});
+        if(!el) return {ok:false,err:'no select'};
+        el.focus();
+        return {ok:true, disabled: el.disabled, selText: window.getSelection().toString()};
+      })()`);
+      await sleep(80);
       const res = await evalJson(`(() => {
         const el=document.querySelector(${JSON.stringify(sel)});
         if(!el) return {ok:false,err:'no select'};
-        if(el.disabled) return {ok:false,err:'disabled'};
+        if(el.disabled) return {ok:false,err:'disabled-after-focus'};
         el.value=${JSON.stringify(value)};
         el.dispatchEvent(new Event('change',{bubbles:true}));
         return {ok:true};
       })()`);
-      await sleep(160);
-      return res;
+      await sleep(180);
+      return { ...res, focusRes };
     };
     const pickSwatch = async (title, color) => {
       await clickTitle(title);
@@ -232,6 +240,9 @@ async function main() {
     check("字号下拉可用", r.ok, r.ok ? "" : JSON.stringify(r));
     st = await state();
     check("选中文字字号 16pt", /font-size:\s*16pt/i.test(st.html), st.html);
+    const computedSize = await evalJson(`(() => { const span=document.querySelector('.ddoc-word-canvas span[data-ddoc-fmt]'); if(!span) return null; const cs=getComputedStyle(span); return { fontSize: cs.fontSize, fontFamily: cs.fontFamily }; })()`);
+    const sizePx = computedSize ? parseFloat(computedSize.fontSize) : 0;
+    check("字号真实渲染约 21.3px（16pt）", sizePx > 20 && sizePx < 23, JSON.stringify(computedSize));
 
     await selectSeek();
     r = await pickSwatch("选中文字的颜色", "#C0392B");
