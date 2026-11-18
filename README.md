@@ -14,7 +14,7 @@ A Word-like desktop for typesetting and duplex printing handouts on local networ
 ## Highlights
 
 - **Word-like A4 desk**: write or paste directly on an authentic A4 canvas with live margins, fonts, line spacing, and column formatting.
-- **Ribbon toolbar**: headings, alignment, and lists; format only the selected text with bold/italic/underline/strikethrough, font, size, color, or highlight; whole-document size, line spacing, margins, and columns adjust in one step.
+- **Ribbon toolbar**: headings, alignment, and lists; with a selection, format bold/italic/underline/strikethrough, font, size, color, or highlight. The font and size controls show the current value and apply to the selection when there is one, otherwise set the document default; line spacing, margins, and columns adjust in one step.
 - **Verified pagination**: groups questions and options into break-safe blocks to avoid splitting questions across pages.
 - **LAN capability probing**: reads real PPD and IPP printer parameters (duplex, paper size, grayscale) and maps them cleanly without guesswork.
 - **On-demand proofing**: click **Print preview** to inspect accurate page layouts and layout rule checks rendered via Chromium CDP before committing to paper.

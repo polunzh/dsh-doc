@@ -87,7 +87,7 @@ async function shoot(ch, sessionId, locale, outFile) {
   // 打开高亮色板 → 选黄色
   await evalJson(`(() => { const b=[...document.querySelectorAll('button[title]')].find(x=>x.title.includes('高亮')||x.title.toLowerCase().includes('highlight')); if(!b) return false; b.dispatchEvent(new MouseEvent('mousedown',{bubbles:true,cancelable:true})); b.click(); return true; })()`);
   await sleep(200);
-  await evalJson(`(() => { const p=document.querySelector('.ddoc-swatch-pop'); if(!p) return false; const b=[...p.querySelectorAll('button.ddoc-swatch')].find(x=>x.title==='#FFF59D'); if(!b) return false; b.dispatchEvent(new MouseEvent('mousedown',{bubbles:true,cancelable:true})); b.click(); return true; })()`);
+  await evalJson(`(() => { const p=document.querySelector('.ddoc-swatch-pop'); if(!p) return false; const b=[...p.querySelectorAll('button.ddoc-pick')].find(x=>x.title==='#FFF59D'); if(!b) return false; b.dispatchEvent(new MouseEvent('mousedown',{bubbles:true,cancelable:true})); b.click(); return true; })()`);
   await sleep(300);
   // 收起浮层后重新选中，让工具栏保持可用态
   await evalJson(`(() => { const root=document.querySelector('.ddoc-word-canvas'); const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT); let node; while((node=walker.nextNode())){ const i=node.nodeValue.indexOf('皎皎空中孤月轮'); if(i>=0){const r=document.createRange();r.setStart(node,i);r.setEnd(node,i+7);const s=getSelection();s.removeAllRanges();s.addRange(r);document.dispatchEvent(new Event('selectionchange'));return true;} } return false; })()`);

@@ -203,6 +203,24 @@ async function main() {
       await sleep(180);
       return res;
     };
+    const pickFontPreset = async (key) => {
+      const open = await evalJson(`(() => {
+        const btn=document.querySelector('.ddoc-font-picker .ddoc-font-select');
+        if(!btn) return {ok:false,err:'no font button'};
+        btn.click();
+        return {ok:true};
+      })()`);
+      await sleep(150);
+      const res = await evalJson(`(() => {
+        const li=document.querySelector('.ddoc-font-list [data-font-key=${JSON.stringify(key)}]');
+        if(!li) return {ok:false,err:'no preset',keys:[...document.querySelectorAll('.ddoc-font-list [data-font-key]')].map(x=>x.getAttribute('data-font-key'))};
+        li.dispatchEvent(new MouseEvent('click',{bubbles:true}));
+        return {ok:true};
+      })()`);
+      await sleep(220);
+      return { ...res, open };
+    };
+    const fontButtonLabel = () => evalJson(`(() => { const btn=document.querySelector('.ddoc-font-picker .ddoc-font-select'); return btn ? btn.textContent.trim() : null; })()`);
     const state = () => evalJson(`(() => { const root=document.querySelector('.ddoc-word-canvas'); const s=getSelection(); return { html: root.innerHTML, text: root.innerText, collapsed: s.isCollapsed, sel: s.toString() }; })()`);
 
     // ── 1. 连续 B / I / U / S ─────────────────────────────────────────
@@ -230,10 +248,14 @@ async function main() {
 
     // ── 2. 字体 / 字号 / 颜色 / 高亮 ────────────────────────────────
     await selectSeek();
-    r = await setSelect(".ddoc-sel-font", "song");
+    const sizeShown = await evalJson(`(() => { const el=document.querySelector('.ddoc-sel-size'); return el ? el.value : null; })()`);
+    check("字号控件收起时显示当前值", Number(sizeShown) > 0, String(sizeShown));
+    r = await pickFontPreset("song");
     check("字体下拉可用", r.ok, r.ok ? "" : JSON.stringify(r));
     st = await state();
     check("选中文字字体已改（Songti）", /font-family:[^;"']*Songti/i.test(st.html), st.html);
+    const fontLabel = await fontButtonLabel();
+    check("字体控件收起时显示当前字体（宋体）", typeof fontLabel === "string" && fontLabel.includes("宋体"), String(fontLabel));
 
     await selectSeek();
     r = await setSelect(".ddoc-sel-size", "16");
