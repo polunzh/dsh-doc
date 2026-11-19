@@ -33,6 +33,8 @@ import {
   sanitizeText,
   sheetPlan,
   wrapPrintHtml,
+  mergeToolPath,
+  TOOL_PATH_DIRS,
 } from "../lib/core.js";
 import { marginMmFrom } from "../lib/cdp.js";
 
@@ -550,4 +552,24 @@ test("resolveTemplate：只剩通用讲义，未知模板一律落回它", () =>
   assert.equal(resolveTemplate("nope").id, "generic");
   assert.equal(resolveTemplate(undefined).id, "generic");
   assert.equal(TEMPLATES.pet, undefined);
+});
+
+/* --------------------------- 子进程 PATH --------------------------- */
+
+test("mergeToolPath：补齐包管理器 bin 目录且去重保序", () => {
+  const merged = mergeToolPath("/usr/bin:/bin");
+  const parts = merged.split(":");
+  assert.equal(parts[0], "/usr/bin", "原 PATH 顺序不变");
+  assert.equal(parts[1], "/bin");
+  for (const dir of TOOL_PATH_DIRS) assert.ok(parts.includes(dir), `应包含 ${dir}`);
+  assert.equal(new Set(parts).size, parts.length, "不应有重复项");
+
+  // 已有 Homebrew 目录时不重复追加
+  const again = mergeToolPath("/opt/homebrew/bin:/usr/bin").split(":");
+  assert.equal(again.filter((p) => p === "/opt/homebrew/bin").length, 1);
+  assert.equal(again[0], "/opt/homebrew/bin");
+
+  // 空/缺失 PATH 也能得到完整搜索路径
+  assert.ok(mergeToolPath(undefined).includes("/opt/homebrew/bin"));
+  assert.ok(mergeToolPath("").split(":").includes("/usr/local/bin"));
 });
